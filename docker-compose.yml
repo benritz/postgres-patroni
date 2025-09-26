@@ -1,6 +1,6 @@
 services:
   etcd_01:
-    image: etcd
+    build: ./etcd
     container_name: etcd_01
     hostname: etcd_01
     restart: unless-stopped
@@ -16,7 +16,7 @@ services:
       etcd_cluster:
 
   etcd_02:
-    image: etcd
+    build: ./etcd
     container_name: etcd_02
     hostname: etcd_02
     restart: unless-stopped
@@ -32,7 +32,7 @@ services:
       etcd_cluster:
 
   pg_01:
-    image: patroni 
+    build: ./patroni
     container_name: pg_01
     hostname: pg_01
     restart: unless-stopped
@@ -52,7 +52,7 @@ services:
       etcd_cluster:
 
   pg_02:
-    image: patroni 
+    build: ./patroni
     container_name: pg_02
     hostname: pg_02
     restart: unless-stopped

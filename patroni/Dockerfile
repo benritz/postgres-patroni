@@ -2,15 +2,8 @@ FROM postgres:17-alpine
 
 RUN apk add --no-cache su-exec build-base linux-headers python3-dev py3-pip py3-virtualenv musl-locales envsubst \
     && python3 -m venv /venv && mkdir /venv/etc
-
-# Create a virtual environment
-# RUN python3 -m venv /venv && mkdir /venv/etc
-
-# Install Patroni
 WORKDIR /venv
-# RUN /venv/bin/pip install patroni[etcd]
 RUN ./bin/pip install psycopg2 && ./bin/pip install patroni[etcd]
-
 COPY patroni.yml /venv/etc/patroni-template.yml
 
 WORKDIR /var/lib/postgresql
