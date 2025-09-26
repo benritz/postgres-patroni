@@ -1,5 +1,5 @@
 scope: pgcluster
-name: ${HOSTNAME} 
+name: ${HOSTNAME}
 
 restapi:
   listen: 0.0.0.0:8008
@@ -45,45 +45,44 @@ bootstrap:
     loop_wait: 10
     retry_timeout: 10
     maximum_lag_on_failover: 1048576
-#    primary_start_timeout: 300
-#    synchronous_mode: false
+    #    primary_start_timeout: 300
+    #    synchronous_mode: false
     #standby_cluster:
-      #host: 127.0.0.1
-      #port: 1111
-      #primary_slot_name: patroni
+    #host: 127.0.0.1
+    #port: 1111
+    #primary_slot_name: patroni
     postgresql:
       use_pg_rewind: true
       pg_hba:
-      # - host replication replicator 127.0.0.1/32 scram-sha-256
-      # - host replication replicator ${POSTGRES_SUBNET} scram-sha-256
-      # - host replication ${POSTGRES_USER} ${POSTGRES_SUBNET} trust
-      # - host all all 0.0.0.0/0 scram-sha-256
-      - host replication replicator 127.0.0.1/32 md5
-      - host replication replicator ${POSTGRES_SUBNET} md5
-      - host all all 0.0.0.0/0 md5
+        # - host replication replicator 127.0.0.1/32 scram-sha-256
+        # - host replication replicator ${POSTGRES_SUBNET} scram-sha-256
+        # - host replication ${POSTGRES_USER} ${POSTGRES_SUBNET} trust
+        # - host all all 0.0.0.0/0 scram-sha-256
+        - host replication replicator 127.0.0.1/32 md5
+        - host replication replicator ${POSTGRES_SUBNET} md5
+        - host all all 0.0.0.0/0 md5
       #  - hostssl all all 0.0.0.0/0 md5
-#      use_slots: true
+      #      use_slots: true
       parameters:
-#        wal_level: hot_standby
-#        hot_standby: "on"
-#        max_connections: 100
-#        max_worker_processes: 8
-#        wal_keep_segments: 8
-#        max_wal_senders: 10
-#        max_replication_slots: 10
-#        max_prepared_transactions: 0
-#        max_locks_per_transaction: 64
-#        wal_log_hints: "on"
-#        track_commit_timestamp: "off"
-#        archive_mode: "on"
-#        archive_timeout: 1800s
-#        archive_command: mkdir -p ../wal_archive && test ! -f ../wal_archive/%f && cp %p ../wal_archive/%f
-#      recovery_conf:
-#        restore_command: cp ../wal_archive/%f %p
+        #        wal_level: hot_standby
+        #        hot_standby: "on"
+        #        max_connections: 100
+        #        max_worker_processes: 8
+        #        wal_keep_segments: 8
+        #        max_wal_senders: 10
+        #        max_replication_slots: 10
+        #        max_prepared_transactions: 0
+        #        max_locks_per_transaction: 64
+        #        wal_log_hints: "on"
+        #        track_commit_timestamp: "off"
+        archive_mode: "on"
+        #        archive_timeout: 1800s
+        archive_command: pgbackrest --stanza=${BACKUP_NAME} archive-push "%p"
+        restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
 
   initdb:
-  - encoding: UTF8
-  - data-checksums
+    - encoding: UTF8
+    - data-checksums
 
   # Additional script to be launched after initial cluster creation (will be passed the connection URL as parameter)
 # post_init: /usr/local/bin/setup_cluster.sh
@@ -91,10 +90,10 @@ bootstrap:
 postgresql:
   listen: 0.0.0.0:5432
   connect_address: ${HOSTNAME}:5432
-#  proxy_address: 127.0.0.1:5433  # The address of connection pool (e.g., pgbouncer) running next to Patroni/Postgres. Only for service discovery.
+  #  proxy_address: 127.0.0.1:5433  # The address of connection pool (e.g., pgbouncer) running next to Patroni/Postgres. Only for service discovery.
   data_dir: /var/lib/postgresql/data
   bin_dir: /usr/local/bin
-#  config_dir:
+  #  config_dir:
 
   pgpass: /tmp/pgpass0
   authentication:
@@ -103,12 +102,12 @@ postgresql:
       password: rep-pass
     superuser:
       username: postgres
-      password: patroni
+      password: password
     rewind:
       username: rewind_user
       password: rewind_password
   parameters:
-    unix_socket_directories: '..'  # parent directory of data_dir
+    unix_socket_directories: ".." # parent directory of data_dir
   #pre_promote: /path/to/pre_promote.sh
 
 #watchdog:
@@ -117,8 +116,8 @@ postgresql:
 #  safety_margin: 5
 
 tags:
-    # failover_priority: 1
-    # sync_priority: 1
-    noloadbalance: false
-    clonefrom: false
-    nostream: false
+  # failover_priority: 1
+  # sync_priority: 1
+  noloadbalance: false
+  clonefrom: false
+  nostream: false

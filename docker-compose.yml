@@ -48,6 +48,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PWD: password
       POSTGRES_SUBNET: "0.0.0.0/0"
+      BACKUP_NAME:
+      BACKUP_REGION:
+      BACKUP_PATH:
+      BACKUP_ACCESS_KEY:
+      BACKUP_SECRET_KEY:
     networks:
       etcd_cluster:
 
@@ -68,6 +73,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PWD: password
       POSTGRES_SUBNET: "0.0.0.0/0"
+      BACKUP_NAME:
+      BACKUP_REGION:
+      BACKUP_PATH:
+      BACKUP_ACCESS_KEY:
+      BACKUP_SECRET_KEY:
     networks:
       etcd_cluster:
 
