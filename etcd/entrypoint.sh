@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+export ETCD_NAME=${HOSTNAME}
+export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://${HOSTNAME}:2380
+export ETCD_ADVERTISE_CLIENT_URLS=http://${HOSTNAME}:2379
+
+etcd

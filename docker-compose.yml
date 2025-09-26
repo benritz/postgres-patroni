@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  etcdnode01:
+    image: etcd
+    container_name: etcd_01
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "5"
+    volumes:
+      - etcd_01_data:/var/etcd-data
+    environment:
+      ETCD_DATA_DIR: /var/etcd-data
+      ETCD_NAME: etcd_01
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: http://${IP_NODO_1}:2380
+      ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+      ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+      ETCD_ADVERTISE_CLIENT_URLS: http://${IP_NODO_1}:2379
+      ETCD_INITIAL_CLUSTER: etcd_01=http://etcdnode01:2380,etcd_02=http://${IP_NODO_2}:2380
+      ETCD_INITIAL_CLUSTER_TOKEN: etcd-postgresl-cluster
+      ETCD_INITIAL_CLUSTER_STATE: new
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+      # - 4001:4001
+    network_mode: "host"
