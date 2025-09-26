@@ -31,9 +31,51 @@ services:
     networks:
       etcd_cluster:
 
+  pg_01:
+    image: patroni 
+    container_name: pg_01
+    hostname: pg_01
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "5"
+    volumes:
+      - pg_01_data:/var/lib/postgresql
+    environment:
+      ETCD_01: etcd_01
+      ETCD_02: etcd_02
+      POSTGRES_USER: postgres
+      POSTGRES_PWD: password
+      POSTGRES_SUBNET: "0.0.0.0/0"
+    networks:
+      etcd_cluster:
+
+  pg_02:
+    image: patroni 
+    container_name: pg_02
+    hostname: pg_02
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "5"
+    volumes:
+      - pg_02_data:/var/lib/postgresql
+    environment:
+      ETCD_01: etcd_01
+      ETCD_02: etcd_02
+      POSTGRES_USER: postgres
+      POSTGRES_PWD: password
+      POSTGRES_SUBNET: "0.0.0.0/0"
+    networks:
+      etcd_cluster:
+
 volumes:
   etcd_01_data:
   etcd_02_data:
+  pg_01_data:
+  pg_02_data:
 
 networks:
   etcd_cluster:
