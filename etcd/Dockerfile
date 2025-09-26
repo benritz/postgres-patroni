@@ -1,24 +1,24 @@
 FROM alpine:latest
 
+ENV ETCD_NAME=
 ENV ETCD_DATA_DIR=/var/etcd-data
-ENV ETCD_NAME=${HOSTNAME}
-ENV ETCD_INITIAL_ADVERTISE_PEER_URLS=http://${HOSTNAME}:2380
+ENV ETCD_INITIAL_ADVERTISE_PEER_URLS=
 ENV ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
 ENV ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
-ENV ETCD_ADVERTISE_CLIENT_URLS=http://${HOSTNAME}:2379
-ENV ETCD_INITIAL_CLUSTER="etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380"
-ENV ETCD_INITIAL_CLUSTER_TOKEN=etcd-postgresl-cluster
+ENV ETCD_ADVERTISE_CLIENT_URLS=
+ENV ETCD_INITIAL_CLUSTER=
+ENV ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster
 ENV ETCD_INITIAL_CLUSTER_STATE=new
 
-RUN apk add bash etcd
+RUN apk add bash etcd etcd-ctl
 
 WORKDIR /usr/bin/
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
+COPY container-entrypoint.sh .
+RUN chmod +x container-entrypoint.sh
 
 VOLUME /var/etcd-data
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["container-entrypoint.sh"]
 
 EXPOSE 2379
 EXPOSE 2380 
