@@ -26,8 +26,6 @@ RUN chmod +x /usr/local/bin/pgbackrest-post-bootstrap.sh
 
 COPY pgbackrest-template.conf /etc/pgbackrest/pgbackrest-template.conf
 
-RUN ln -s /usr/libexec/postgresql/* /usr/local/bin/
-
 ENTRYPOINT ["container-entrypoint.sh"]
 
 EXPOSE 5432 8008

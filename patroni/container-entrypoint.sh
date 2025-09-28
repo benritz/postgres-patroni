@@ -14,4 +14,6 @@ envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
 write-pgbackrest-conf.sh
 
+export PGPASSFILE=/tmp/pgpass0
+
 exec su-exec postgres /venv/bin/patroni /venv/etc/patroni.yml

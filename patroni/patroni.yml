@@ -17,21 +17,10 @@ restapi:
 #  keyfile: /etc/ssl/private/ssl-cert-snakeoil.key
 #  cacert: /etc/ssl/certs/ssl-cacert-snakeoil.pem
 
-#citus:
-#  database: citus
-#  group: 0  # coordinator
-
 etcd3:
   hosts:
     - ${ETCD_01}:2379
     - ${ETCD_02}:2379
-
-#raft:
-#  data_dir: .
-#  self_addr: 127.0.0.1:2222
-#  partner_addrs:
-#  - 127.0.0.1:2223
-#  - 127.0.0.1:2224
 
 # The bootstrap configuration. Works only when the cluster is not yet initialized.
 # If the cluster is already initialized, all changes in the `bootstrap` section are ignored!
@@ -81,6 +70,7 @@ bootstrap:
         archive_command: pgbackrest --stanza=${BACKUP_NAME} archive-push "%p"
         restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
 
+  # bootstrap using pgbackrest
   method: pgbackrest
 
   pgbackrest:
@@ -106,7 +96,7 @@ postgresql:
   connect_address: ${HOSTNAME}:5432
   #  proxy_address: 127.0.0.1:5433  # The address of connection pool (e.g., pgbouncer) running next to Patroni/Postgres. Only for service discovery.
   data_dir: /var/lib/postgresql/data
-  bin_dir: /usr/local/bin
+  bin_dir: /usr/bin
   #  config_dir:
 
   pgpass: /tmp/pgpass0
