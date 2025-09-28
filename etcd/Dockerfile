@@ -10,11 +10,10 @@ ENV ETCD_INITIAL_CLUSTER=
 ENV ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster
 ENV ETCD_INITIAL_CLUSTER_STATE=new
 
-RUN apk add bash etcd etcd-ctl
-
 WORKDIR /usr/bin/
-COPY container-entrypoint.sh .
-RUN chmod +x container-entrypoint.sh
+COPY . .
+RUN apk add bash etcd etcd-ctl && \
+  chmod +x *.sh
 
 VOLUME /var/etcd-data
 
