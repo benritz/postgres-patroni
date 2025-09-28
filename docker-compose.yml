@@ -45,6 +45,7 @@ services:
     environment:
       ETCD_01: etcd_01
       ETCD_02: etcd_02
+      PGPASSFILE: /tmp/pgpass0
       POSTGRES_USER: postgres
       POSTGRES_PWD: password
       POSTGRES_SUBNET: "0.0.0.0/0"
@@ -70,6 +71,7 @@ services:
     environment:
       ETCD_01: etcd_01
       ETCD_02: etcd_02
+      PGPASSFILE: /tmp/pgpass0
       POSTGRES_USER: postgres
       POSTGRES_PWD: password
       POSTGRES_SUBNET: "0.0.0.0/0"

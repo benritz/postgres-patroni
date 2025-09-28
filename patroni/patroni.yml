@@ -61,6 +61,7 @@ bootstrap:
         - host replication replicator 127.0.0.1/32 md5
         - host replication replicator ${POSTGRES_SUBNET} md5
         - host all all 0.0.0.0/0 md5
+        - local all all trust
       #  - hostssl all all 0.0.0.0/0 md5
       #      use_slots: true
       parameters:
@@ -80,9 +81,22 @@ bootstrap:
         archive_command: pgbackrest --stanza=${BACKUP_NAME} archive-push "%p"
         restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
 
-  initdb:
-    - encoding: UTF8
-    - data-checksums
+  method: pgbackrest
+
+  pgbackrest:
+    command: pgbackrest-bootstrap.sh >/var/log/bootstrap.log
+    keep_existing_recovery_conf: true
+    no_params: false
+    recovery_conf:
+      recovery_target_timeline: latest
+      recovery_target_action: promote
+      restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
+
+  post_bootstrap: pgbackrest-post-bootstrap.sh
+
+  # initdb:
+  #   - encoding: UTF8
+  #   - data-checksums
 
   # Additional script to be launched after initial cluster creation (will be passed the connection URL as parameter)
 # post_init: /usr/local/bin/setup_cluster.sh
@@ -107,8 +121,17 @@ postgresql:
       username: rewind_user
       password: rewind_password
   parameters:
-    unix_socket_directories: ".." # parent directory of data_dir
+    unix_socket_directories: /run/postgresql
   #pre_promote: /path/to/pre_promote.sh
+  create_replica_methods:
+    - pgbackrest
+    - basebackup
+  pgbackrest:
+    command: pgbackrest --stanza=${BACKUP_NAME} restore --type=none
+    keep_data: true
+    no_params: true
+  basebackup:
+    checkpoint: "fast"
 
 #watchdog:
 #  mode: automatic # Allowed values: off, automatic, required
