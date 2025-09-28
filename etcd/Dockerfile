@@ -10,8 +10,9 @@ ENV ETCD_INITIAL_CLUSTER=
 ENV ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster
 ENV ETCD_INITIAL_CLUSTER_STATE=new
 
-WORKDIR /usr/bin/
+WORKDIR /usr/local/bin/
 COPY . .
+
 RUN apk add bash etcd etcd-ctl && \
   chmod +x *.sh
 

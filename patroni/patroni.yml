@@ -1,4 +1,4 @@
-scope: pgcluster
+scope: ${CLUSTER}
 name: ${HOSTNAME}
 
 restapi:

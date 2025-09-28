@@ -10,6 +10,11 @@ mkdir -p /run/postgresql
 chown postgres:postgres /run/postgresql
 chmod 0750 /run/postgresql
 
+if [[ -z "$CLUSTER" ]]; then
+  echo "Missing CLUSTER var"
+  exit 1
+fi
+
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
 write-pgbackrest-conf.sh
