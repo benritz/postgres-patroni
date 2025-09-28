@@ -12,6 +12,7 @@ services:
       - etcd_01_data:/var/etcd-data
     environment:
       ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380
+      ETCD_INITIAL_CLUSTER_TOKEN: ${CLUSTER}
     networks:
       etcd_cluster:
 
@@ -28,6 +29,7 @@ services:
       - etcd_02_data:/var/etcd-data
     environment:
       ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380
+      ETCD_INITIAL_CLUSTER_TOKEN: ${CLUSTER}
     networks:
       etcd_cluster:
 
