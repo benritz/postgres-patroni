@@ -109,6 +109,9 @@ services:
       - pg_02
     networks:
       etcd_cluster:
+    ports:
+      - 6000:5000
+      - 6001:5001
 
 volumes:
   etcd_01_data:
