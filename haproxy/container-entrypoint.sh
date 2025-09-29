@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+: "${PG_HOSTS?Error: PG_HOSTS Missing}"
+
+IFS=',' read -r -a HOST_ARRAY <<<"$PG_HOSTS"
+
+TARGETS=""
+INDEX=1
+for PART in "${HOST_ARRAY[@]}"; do
+  TARGET_HOST="${PART// /}"
+  if [[ -z "$TARGET_HOST" ]]; then
+    continue
+  fi
+  TARGET_NAME="pg${INDEX}"
+  LINE="    server ${TARGET_NAME} ${TARGET_HOST} maxconn 100 check port 8008"
+  TARGETS+="${LINE}"$'\n'
+  INDEX=$((INDEX + 1))
+done
+
+TARGETS="${TARGETS%$'\n'}"
+
+awk -v block="$TARGETS" '
+  /__TARGETS__/ { print block; next }
+  { print }
+' /usr/local/etc/haproxy/haproxy-template.cfg >/usr/local/etc/haproxy/haproxy.cfg
+
+exec haproxy -W -db -f /usr/local/etc/haproxy/haproxy.cfg

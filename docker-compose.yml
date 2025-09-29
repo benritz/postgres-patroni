@@ -93,6 +93,23 @@ services:
     networks:
       etcd_cluster:
 
+  haproxy_01:
+    build: ./haproxy
+    container_name: haproxy_01
+    hostname: haproxy_01
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "5"
+    environment:
+      PG_HOSTS: pg_01:5432,pg_02:5432
+    depends_on:
+      - pg_01
+      - pg_02
+    networks:
+      etcd_cluster:
+
 volumes:
   etcd_01_data:
   etcd_02_data:
