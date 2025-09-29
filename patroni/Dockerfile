@@ -6,6 +6,7 @@ COPY . .
 RUN apk add --no-cache bash \
   postgresql \
   pgbackrest \ 
+  pgbouncer \
   libpq-dev \ 
   su-exec \
   build-base \
@@ -19,6 +20,11 @@ RUN apk add --no-cache bash \
   python3 -m venv /venv && \
   mkdir /venv/etc && \
   mv patroni.yml /venv/etc/patroni-template.yml && \
+  mkdir -p /usr/local/etc && \
+  mv pgbouncer.ini /usr/local/etc/pgbouncer.ini && \
+  echo "\"pgbouncer_auth_user\" \"password\"" > /usr/local/etc/userlist.txt && \
+  mkdir -p /var/run/pgbouncer && \
+  chown -R pgbouncer /var/run/pgbouncer && \
   chmod +x *.sh && \
   mv pgbackrest-template.conf /etc/pgbackrest/pgbackrest-template.conf && \
   cd /venv && \
@@ -27,4 +33,4 @@ RUN apk add --no-cache bash \
 
 ENTRYPOINT ["container-entrypoint.sh"]
 
-EXPOSE 5432 8008
+EXPOSE 5432 8008 6432
