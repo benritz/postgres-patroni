@@ -15,6 +15,10 @@ if [[ -z "$CLUSTER" ]]; then
   exit 1
 fi
 
+if [[ -z "$BACKUP_NAME" ]]; then
+  export BACKUP_NAME=${CLUSTER}
+fi
+
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
 write-pgbackrest-conf.sh

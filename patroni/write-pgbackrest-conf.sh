@@ -3,7 +3,8 @@
 set -e
 
 if [[ -z "$BACKUP_NAME" ]]; then
-  export BACKUP_NAME=${CLUSTER}
+  echo "Error: Missing BACKUP_NAME."
+  exit 1
 fi
 
 if [[ -z "$BACKUP_PATH" ]]; then

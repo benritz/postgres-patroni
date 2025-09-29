@@ -2,6 +2,11 @@
 
 set -e
 
+if [[ -z "$BACKUP_NAME" ]]; then
+  echo "Error: Missing BACKUP_NAME."
+  exit 1
+fi
+
 STANZA_STATE=$(pgbackrest --stanza="$BACKUP_NAME" --output=json info | jq -r .[].status.message)
 
 echo "Stanza $BACKUP_NAME: $STANZA_STATE"
