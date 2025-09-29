@@ -56,6 +56,11 @@ services:
       BACKUP_PATH:
       BACKUP_ACCESS_KEY:
       BACKUP_SECRET_KEY:
+      RESTORE_NAME:
+      RESTORE_NAME_REGION:
+      RESTORE_PATH:
+      RESTORE_ACCESS_KEY:
+      RESTORE_SECRET_KEY:
     networks:
       etcd_cluster:
 
@@ -82,6 +87,11 @@ services:
       BACKUP_PATH:
       BACKUP_ACCESS_KEY:
       BACKUP_SECRET_KEY:
+      RESTORE_NAME:
+      RESTORE_NAME_REGION:
+      RESTORE_PATH:
+      RESTORE_ACCESS_KEY:
+      RESTORE_SECRET_KEY:
     networks:
       etcd_cluster:
 

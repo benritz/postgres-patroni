@@ -2,6 +2,7 @@
 
 set -e
 
+# backup vars
 if [[ -z "$BACKUP_NAME" ]]; then
   echo "Error: Missing BACKUP_NAME."
   exit 1
@@ -36,10 +37,38 @@ fi
 export BACKUP_S3_BUCKET
 export BACKUP_S3_PATH
 
-if [[ -z "$BACKUP_ACCESS_KEY" || -z "$BACKUP_SECRET_KEY" ]]; then
-  sed '/# S3_AUTH_BEGIN/,/# S3_AUTH_END/d' /opt/ibase/pgbackrest-template.conf | envsubst >/etc/pgbackrest/pgbackrest.conf
-else
-  envsubst </etc/pgbackrest/pgbackrest-template.conf >/etc/pgbackrest/pgbackrest.conf
+# restore vars
+RESTORE_S3_BUCKET=$(echo "$RESTORE_PATH" | sed -E 's|^s3://([^/]+)/.*$|\1|')
+RESTORE_S3_PATH=$(echo "$RESTORE_PATH" | sed -E 's|^s3://[^/]+/(.*)$|\1|')
+
+if [[ -z "$RESTORE_S3_BUCKET" ]]; then
+  echo "Error: Invalid RESTORE_PATH."
+  exit 1
 fi
+
+if [[ "$RESTORE_S3_PATH" == "$RESTORE_PATH" ]]; then
+  RESTORE_S3_PATH=""
+fi
+
+export RESTORE_S3_BUCKET
+export RESTORE_S3_PATH
+
+rm -f /etc/pgbackrest/tmp.conf
+cp /etc/pgbackrest/pgbackrest-template.conf /etc/pgbackrest/tmp.conf
+
+if [[ "$RESTORE_NAME" == "$BACKUP_NAME" ]]; then
+  sed -i '/# RESTORE_STANZA_BEGIN/,/# RESTORE_STANZA_END/d' /etc/pgbackrest/tmp.conf
+else
+  if [[ -z "$RESTORE_ACCESS_KEY" || -z "$RESTORE_SECRET_KEY" ]]; then
+    sed -i '/# RESTORE_AUTH_BEGIN/,/# RESTORE_AUTH_END/d' /etc/pgbackrest/tmp.conf
+  fi
+fi
+
+if [[ -z "$BACKUP_ACCESS_KEY" || -z "$BACKUP_SECRET_KEY" ]]; then
+  sed -i '/# BACKUP_AUTH_BEGIN/,/# BACKUP_AUTH_END/d' /etc/pgbackrest/tmp.conf
+fi
+
+envsubst </etc/pgbackrest/tmp.conf >/etc/pgbackrest/pgbackrest.conf
+rm /etc/pgbackrest/tmp.conf
 
 chown postgres:postgres /etc/pgbackrest/pgbackrest.conf
