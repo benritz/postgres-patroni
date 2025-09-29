@@ -112,6 +112,7 @@ services:
     ports:
       - 6000:5000
       - 6001:5001
+      - 7001:7000
 
 volumes:
   etcd_01_data:
