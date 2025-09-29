@@ -7,5 +7,6 @@ RUN apk add bash && \
   rm -f /usr/local/etc/haproxy/haproxy.cfg && \
   mv haproxy-template.cfg /usr/local/etc/haproxy/haproxy-template.cfg
 
-
 ENTRYPOINT ["container-entrypoint.sh"]
+
+EXPOSE 5000 5001
