@@ -18,9 +18,7 @@ restapi:
 #  cacert: /etc/ssl/certs/ssl-cacert-snakeoil.pem
 
 etcd3:
-  hosts:
-    - ${ETCD_01}:2379
-    - ${ETCD_02}:2379
+  hosts: ${ETCD_HOSTS}
 
 # The bootstrap configuration. Works only when the cluster is not yet initialized.
 # If the cluster is already initialized, all changes in the `bootstrap` section are ignored!

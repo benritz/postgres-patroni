@@ -45,8 +45,7 @@ services:
     volumes:
       - pg_01_data:/var/lib/postgresql
     environment:
-      ETCD_01: etcd_01
-      ETCD_02: etcd_02
+      ETCD_HOSTS: etcd_01:2379,etcd_02:2379
       CLUSTER:
       POSTGRES_USER: postgres
       POSTGRES_PWD: password
@@ -76,8 +75,7 @@ services:
     volumes:
       - pg_02_data:/var/lib/postgresql
     environment:
-      ETCD_01: etcd_01
-      ETCD_02: etcd_02
+      ETCD_HOSTS: etcd_01:2379,etcd_02:2379
       CLUSTER:
       POSTGRES_USER: postgres
       POSTGRES_PWD: password
