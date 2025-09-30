@@ -103,7 +103,7 @@ services:
         max-size: "1m"
         max-file: "5"
     environment:
-      PG_HOSTS: pg_01:5432,pg_02:5432
+      TARGETS: pg_01:6432,pg_02:6432
     depends_on:
       - pg_01
       - pg_02

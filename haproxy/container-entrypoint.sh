@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-: "${PG_HOSTS?Error: PG_HOSTS Missing}"
+: "${TARGETS?Error: TARGETS Missing}"
 
-IFS=',' read -r -a HOST_ARRAY <<<"$PG_HOSTS"
+IFS=',' read -r -a HOST_ARRAY <<<"$TARGETS"
 
 TARGETS=""
 INDEX=1
