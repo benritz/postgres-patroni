@@ -27,6 +27,8 @@ RUN apk add --no-cache bash \
   chown -R pgbouncer /usr/local/etc/pgbouncer && \
   chmod +x *.sh && \
   mv pgbackrest-template.conf /etc/pgbackrest/pgbackrest-template.conf && \
+  mkdir -p /tmp/pgbackrest && \
+  chown -R postgres /tmp/pgbackrest && \
   cd /venv && \
   ./bin/pip install psycopg2 && \
   ./bin/pip install patroni[etcd]

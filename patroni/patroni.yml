@@ -75,10 +75,10 @@ bootstrap:
     command: patroni-bootstrap.sh >/var/log/bootstrap.log
     keep_existing_recovery_conf: true
     no_params: false
-    # recovery_conf:
-    #   recovery_target_timeline: latest
-    #   recovery_target_action: promote
-    #   restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
+    recovery_conf:
+      recovery_target_timeline: latest
+      recovery_target_action: promote
+      restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
 
   post_bootstrap: patroni-post-bootstrap.sh
 

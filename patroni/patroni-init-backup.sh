@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ -z "$BACKUP_NAME" ]]; then
-  echo "Error: Missing BACKUP_NAME."
-  exit 1
-fi
+BACKUP_NAME="${BACKUP_NAME:=$CLUSTER}"
 
 STANZA_STATE=$(pgbackrest --stanza="$BACKUP_NAME" --output=json info | jq -r .[0].status.message)
 

@@ -15,9 +15,7 @@ if [[ -z "$CLUSTER" ]]; then
   exit 1
 fi
 
-if [[ -z "$BACKUP_NAME" ]]; then
-  export BACKUP_NAME=${CLUSTER}
-fi
+export BACKUP_NAME="${BACKUP_NAME:=$CLUSTER}"
 
 export RESTORE_NAME="${RESTORE_NAME:=$BACKUP_NAME}"
 export RESTORE_PATH="${RESTORE_PATH:=$BACKUP_PATH}"
