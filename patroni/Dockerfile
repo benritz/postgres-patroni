@@ -26,7 +26,6 @@ RUN apk add --no-cache bash \
   mkdir -p /var/run/pgbouncer && \
   chown -R pgbouncer /var/run/pgbouncer && \
   chown -R pgbouncer /usr/local/etc/pgbouncer && \
-  chmod +x *.sh && \
   mv pgbackrest-template.conf /etc/pgbackrest/pgbackrest-template.conf && \
   mkdir -p /tmp/pgbackrest && \
   chown -R postgres /tmp/pgbackrest && \
@@ -34,6 +33,6 @@ RUN apk add --no-cache bash \
   ./bin/pip install psycopg2 && \
   ./bin/pip install patroni[etcd]
 
-ENTRYPOINT ["container-entrypoint.sh"]
+ENTRYPOINT ["container-entrypoint"]
 
 EXPOSE 5432 6432 8008 8009

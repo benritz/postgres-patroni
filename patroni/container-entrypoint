@@ -25,7 +25,7 @@ export RESTORE_SECRET_KEY="${RESTORE_SECRET_KEY:=$BACKUP_SECRET_KEY}"
 
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
-write-pgbackrest-conf.sh
+write-pgbackrest-conf
 
 export PGPASSFILE=/tmp/pgpass0
 

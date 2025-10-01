@@ -9,4 +9,4 @@ if [[ -f "/var/run/postgresql/post-init-db" ]]; then
   rm /var/lib/postgresql/pgbouncer-init.sql
 fi
 
-patroni-init-backup.sh
+patroni-init-backup

@@ -14,7 +14,7 @@ services:
       ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380
       ETCD_INITIAL_CLUSTER_TOKEN: ${CLUSTER}
     networks:
-      etcd_cluster:
+      cluster:
 
   etcd_02:
     build: ./etcd
@@ -31,7 +31,7 @@ services:
       ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380
       ETCD_INITIAL_CLUSTER_TOKEN: ${CLUSTER}
     networks:
-      etcd_cluster:
+      cluster:
 
   pg_01:
     build: ./patroni
@@ -61,7 +61,7 @@ services:
       RESTORE_ACCESS_KEY:
       RESTORE_SECRET_KEY:
     networks:
-      etcd_cluster:
+      cluster:
 
   pg_02:
     build: ./patroni
@@ -91,7 +91,7 @@ services:
       RESTORE_ACCESS_KEY:
       RESTORE_SECRET_KEY:
     networks:
-      etcd_cluster:
+      cluster:
 
   haproxy_01:
     build: ./haproxy
@@ -108,7 +108,7 @@ services:
       - pg_01
       - pg_02
     networks:
-      etcd_cluster:
+      cluster:
     ports:
       - 6000:5000
       - 6001:5001
@@ -121,5 +121,5 @@ volumes:
   pg_02_data:
 
 networks:
-  etcd_cluster:
+  cluster:
     driver: bridge

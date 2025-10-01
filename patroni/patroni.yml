@@ -72,7 +72,7 @@ bootstrap:
   method: pgbackrest
 
   pgbackrest:
-    command: patroni-bootstrap.sh >/var/log/bootstrap.log
+    command: patroni-bootstrap>/var/log/bootstrap.log
     keep_existing_recovery_conf: true
     no_params: false
     recovery_conf:
@@ -80,7 +80,7 @@ bootstrap:
       recovery_target_action: promote
       restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
 
-  post_bootstrap: patroni-post-bootstrap.sh
+  post_bootstrap: patroni-post-bootstrap
 
   # initdb:
   #   - encoding: UTF8
@@ -119,8 +119,8 @@ postgresql:
   basebackup:
     checkpoint: "fast"
   callbacks:
-    on_start: patroni-callback.sh
-    on_role_change: patroni-callback.sh
+    # on_start: patroni-callback
+    # on_role_change: patroni-callback
 
 #watchdog:
 #  mode: automatic # Allowed values: off, automatic, required
