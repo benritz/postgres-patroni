@@ -21,7 +21,8 @@ RUN apk add --no-cache bash \
   mkdir /venv/etc && \
   mv patroni.yml /venv/etc/patroni-template.yml && \
   mkdir -p /usr/local/etc/pgbouncer && \
-  mv pgbouncer* /usr/local/etc/pgbouncer && \
+  mv pgbouncer.ini /usr/local/etc/pgbouncer && \
+  mv pgbouncer-init-template.sql /usr/local/etc/pgbouncer && \
   mkdir -p /var/run/pgbouncer && \
   chown -R pgbouncer /var/run/pgbouncer && \
   chown -R pgbouncer /usr/local/etc/pgbouncer && \
@@ -35,4 +36,4 @@ RUN apk add --no-cache bash \
 
 ENTRYPOINT ["container-entrypoint.sh"]
 
-EXPOSE 5432 8008 6432
+EXPOSE 5432 6432 8008 8009

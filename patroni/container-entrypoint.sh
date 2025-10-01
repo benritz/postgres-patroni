@@ -33,5 +33,6 @@ export PGBOUNCER_PWD="${PGBOUNCER_PWD:=password}"
 rm -f /usr/local/etc/pgbouncer/userlist.txt
 echo "\"pgbouncer\" \"${PGBOUNCER_PWD}\"" >/usr/local/etc/pgbouncer/userlist.txt
 pgbouncer -d -q /usr/local/etc/pgbouncer/pgbouncer.ini
+pgbouncer-haproxy-agent
 
 exec su-exec postgres /venv/bin/patroni /venv/etc/patroni.yml

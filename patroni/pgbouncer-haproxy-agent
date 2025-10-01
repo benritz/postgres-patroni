@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+nohup /usr/bin/env python3 /usr/local/bin/pgbouncer-haproxy-agent.py >/var/log/pgbouncer-haproxy-agent.log 2>&1 &
