@@ -1,22 +1,23 @@
-FROM alpine:latest
+FROM alpine:3.22
 
 WORKDIR /usr/local/bin/
 COPY . . 
 
-RUN apk add --no-cache bash \
-  postgresql \
-  pgbackrest \ 
-  pgbouncer \
-  libpq-dev \ 
-  su-exec \
-  build-base \
-  linux-headers \
-  python3-dev \ 
-  py3-pip \
-  py3-virtualenv \
-  musl-locales \
-  envsubst \
-  jq && \
+RUN apk add --no-cache \
+    bash \
+    postgresql \
+    pgbackrest \
+    pgbouncer \
+    libpq-dev \
+    su-exec \
+    build-base \
+    linux-headers \
+    python3-dev \
+    py3-pip \
+    py3-virtualenv \
+    musl-locales \
+    envsubst \
+    jq && \
   python3 -m venv /venv && \
   mkdir /venv/etc && \
   mv patroni.yml /venv/etc/patroni-template.yml && \
