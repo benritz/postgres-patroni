@@ -11,7 +11,7 @@ services:
     volumes:
       - etcd_01_data:/var/etcd-data
     environment:
-      ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380
+      ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380,etcd_03=http://etcd_03:2380
       ETCD_INITIAL_CLUSTER_TOKEN: ${CLUSTER}
     networks:
       cluster:
@@ -28,7 +28,24 @@ services:
     volumes:
       - etcd_02_data:/var/etcd-data
     environment:
-      ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380
+      ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380,etcd_03=http://etcd_03:2380
+      ETCD_INITIAL_CLUSTER_TOKEN: ${CLUSTER}
+    networks:
+      cluster:
+
+  etcd_03:
+    build: ./etcd
+    container_name: etcd_03
+    hostname: etcd_03
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "5"
+    volumes:
+      - etcd_03_data:/var/etcd-data
+    environment:
+      ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380,etcd_03=http://etcd_03:2380
       ETCD_INITIAL_CLUSTER_TOKEN: ${CLUSTER}
     networks:
       cluster:
@@ -45,7 +62,7 @@ services:
     volumes:
       - pg_01_data:/var/lib/postgresql
     environment:
-      ETCD_HOSTS: etcd_01:2379,etcd_02:2379
+      ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
       POSTGRES_USER: postgres
       POSTGRES_PWD: password
@@ -75,7 +92,7 @@ services:
     volumes:
       - pg_02_data:/var/lib/postgresql
     environment:
-      ETCD_HOSTS: etcd_01:2379,etcd_02:2379
+      ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
       POSTGRES_USER: postgres
       POSTGRES_PWD: password
@@ -117,6 +134,7 @@ services:
 volumes:
   etcd_01_data:
   etcd_02_data:
+  etcd_03_data:
   pg_01_data:
   pg_02_data:
 

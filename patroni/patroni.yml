@@ -72,7 +72,7 @@ bootstrap:
   method: pgbackrest
 
   pgbackrest:
-    command: patroni-bootstrap>/var/log/bootstrap.log
+    command: patroni-bootstrap
     keep_existing_recovery_conf: true
     no_params: false
     recovery_conf:
