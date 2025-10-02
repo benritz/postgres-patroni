@@ -73,8 +73,12 @@ services:
     environment:
       ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
-      POSTGRES_USER: postgres
-      POSTGRES_PWD_FILE: /run/secrets/postgres_superuser_password
+      POSTGRES_SU_USER: postgres
+      POSTGRES_SU_PWD_FILE: /run/secrets/postgres_su_password
+      POSTGRES_REPL_USER: replicator
+      POSTGRES_REPL_PWD_FILE: /run/secrets/postgres_repl_password
+      POSTGRES_REWIND_USER: rewinder
+      POSTGRES_REWIND_PWD_FILE: /run/secrets/postgres_rewind_password
       POSTGRES_SUBNET: "0.0.0.0/0"
       PGBOUNCER_PWD_FILE: /run/secrets/pgbouncer_password
       BACKUP_NAME:
@@ -88,7 +92,9 @@ services:
       RESTORE_ACCESS_KEY_FILE: /run/secrets/restore_access_key
       RESTORE_SECRET_KEY_FILE: /run/secrets/restore_secret_key
     secrets:
-      - postgres_superuser_password
+      - postgres_su_password
+      - postgres_repl_password
+      - postgres_rewind_password
       - pgbouncer_password
       - backup_path
       - backup_region
@@ -115,8 +121,12 @@ services:
     environment:
       ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
-      POSTGRES_USER: postgres
-      POSTGRES_PWD_FILE: /run/secrets/postgres_superuser_password
+      POSTGRES_SU_USER: postgres
+      POSTGRES_SU_PWD_FILE: /run/secrets/postgres_su_password
+      POSTGRES_REPL_USER: replicator
+      POSTGRES_REPL_PWD_FILE: /run/secrets/postgres_repl_password
+      POSTGRES_REWIND_USER: rewinder
+      POSTGRES_REWIND_PWD_FILE: /run/secrets/postgres_rewind_password
       POSTGRES_SUBNET: "0.0.0.0/0"
       PGBOUNCER_PWD_FILE: /run/secrets/pgbouncer_password
       BACKUP_NAME:
@@ -130,7 +140,9 @@ services:
       RESTORE_ACCESS_KEY_FILE: /run/secrets/restore_access_key
       RESTORE_SECRET_KEY_FILE: /run/secrets/restore_secret_key
     secrets:
-      - postgres_superuser_password
+      - postgres_su_password
+      - postgres_repl_password
+      - postgres_rewind_password
       - pgbouncer_password
       - backup_path
       - backup_region
@@ -167,8 +179,12 @@ services:
 secrets:
   etcd_initial_cluster_token:
     file: ./secrets/etcd_initial_cluster_token
-  postgres_superuser_password:
-    file: ./secrets/postgres_superuser_password
+  postgres_su_password:
+    file: ./secrets/postgres_su_password
+  postgres_repl_password:
+    file: ./secrets/postgres_repl_password
+  postgres_rewind_password:
+    file: ./secrets/postgres_rewind_password
   pgbouncer_password:
     file: ./secrets/pgbouncer_password
   backup_path:

@@ -9,9 +9,7 @@ function read_secret_var() {
   local file_path="${!file_var:-}"
   local file_val
   if [[ -z "$current_val" && -n "$file_path" && -r "$file_path" ]]; then
-    ls "$file_path"
     if IFS= read -r file_val <"$file_path" || true; then
-      echo "$file_val"
       export "$var"="$file_val"
     fi
   fi
@@ -30,7 +28,9 @@ if [[ -z "$CLUSTER" ]]; then
   exit 1
 fi
 
-read_secret_var POSTGRES_PWD
+read_secret_var POSTGRES_SU_PWD
+read_secret_var POSTGRES_REPL_PWD
+read_secret_var POSTGRES_REWIND_PWD
 read_secret_var PGBOUNCER_PWD
 read_secret_var BACKUP_PATH
 read_secret_var BACKUP_REGION

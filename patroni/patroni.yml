@@ -97,15 +97,15 @@ postgresql:
   bin_dir: /usr/bin
   pgpass: /tmp/pgpass0
   authentication:
-    replication:
-      username: replicator
-      password: rep-pass
     superuser:
-      username: postgres
-      password: password
+      username: ${POSTGRES_SU_USER}
+      password: ${POSTGRES_SU_PWD}
+    replication:
+      username: ${POSTGRES_REPL_USER}
+      password: ${POSTGRES_REPL_PWD}
     rewind:
-      username: rewind_user
-      password: rewind_password
+      username: ${POSTGRES_REWIND_USER}
+      password: ${POSTGRES_REWIND_PWD}
   parameters:
     unix_socket_directories: /run/postgresql
   #pre_promote: /path/to/pre_promote.sh
