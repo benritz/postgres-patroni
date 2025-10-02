@@ -2,6 +2,21 @@
 
 set -e
 
+function read_secret_var() {
+  local var="$1"
+  local file_var="${var}_FILE"
+  local current_val="${!var:-}"
+  local file_path="${!file_var:-}"
+  local file_val
+  if [[ -z "$current_val" && -n "$file_path" && -r "$file_path" ]]; then
+    ls "$file_path"
+    if IFS= read -r file_val <"$file_path" || true; then
+      echo "$file_val"
+      export "$var"="$file_val"
+    fi
+  fi
+}
+
 if [ -z "$ETCD_NAME" ]; then
   export ETCD_NAME=${HOSTNAME}
 fi
@@ -11,6 +26,7 @@ export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://${HOSTNAME}:2380
 export ETCD_ADVERTISE_CLIENT_URLS=http://${HOSTNAME}:2379
 export ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
 export ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
-export ETCD_INITIAL_CLUSTER_STATE=new
+
+read_secret_var ETCD_INITIAL_CLUSTER_STATE
 
 etcd
