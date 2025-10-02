@@ -2,6 +2,21 @@
 
 set -e
 
+function read_secret_var() {
+  local var="$1"
+  local file_var="${var}_FILE"
+  local current_val="${!var:-}"
+  local file_path="${!file_var:-}"
+  local file_val
+  if [[ -z "$current_val" && -n "$file_path" && -r "$file_path" ]]; then
+    ls "$file_path"
+    if IFS= read -r file_val <"$file_path" || true; then
+      echo "$file_val"
+      export "$var"="$file_val"
+    fi
+  fi
+}
+
 mkdir -p /var/lib/postgresql/data
 chown postgres:postgres /var/lib/postgresql/data
 chmod 0750 /var/lib/postgresql/data
@@ -14,6 +29,17 @@ if [[ -z "$CLUSTER" ]]; then
   echo "Missing CLUSTER var"
   exit 1
 fi
+
+read_secret_var POSTGRES_PWD
+read_secret_var PGBOUNCER_PWD
+read_secret_var BACKUP_PATH
+read_secret_var BACKUP_REGION
+read_secret_var BACKUP_ACCESS_KEY
+read_secret_var BACKUP_SECRET_KEY
+read_secret_var RESTORE_PATH
+read_secret_var RESTORE_REGION
+read_secret_var RESTORE_ACCESS_KEY
+read_secret_var RESTORE_SECRET_KEY
 
 export BACKUP_NAME="${BACKUP_NAME:=$CLUSTER}"
 

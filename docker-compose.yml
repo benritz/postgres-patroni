@@ -65,18 +65,30 @@ services:
       ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
       POSTGRES_USER: postgres
-      POSTGRES_PWD: password
+      POSTGRES_PWD_FILE: /run/secrets/postgres_superuser_password
       POSTGRES_SUBNET: "0.0.0.0/0"
+      PGBOUNCER_PWD_FILE: /run/secrets/pgbouncer_password
       BACKUP_NAME:
-      BACKUP_REGION:
-      BACKUP_PATH:
-      BACKUP_ACCESS_KEY:
-      BACKUP_SECRET_KEY:
+      BACKUP_REGION_FILE: /run/secrets/backup_region
+      BACKUP_PATH_FILE: /run/secrets/backup_path
+      BACKUP_ACCESS_KEY_FILE: /run/secrets/backup_access_key
+      BACKUP_SECRET_KEY_FILE: /run/secrets/backup_secret_key
       RESTORE_NAME:
-      RESTORE_NAME_REGION:
-      RESTORE_PATH:
-      RESTORE_ACCESS_KEY:
-      RESTORE_SECRET_KEY:
+      RESTORE_REGION_FILE: /run/secrets/region_restore
+      RESTORE_PATH_FILE: /run/secrets/region_path
+      RESTORE_ACCESS_KEY_FILE: /run/secrets/restore_access_key
+      RESTORE_SECRET_KEY_FILE: /run/secrets/restore_secret_key
+    secrets:
+      - postgres_superuser_password
+      - pgbouncer_password
+      - backup_path
+      - backup_region
+      - backup_access_key
+      - backup_secret_key
+      - restore_path
+      - restore_region
+      - restore_access_key
+      - restore_secret_key
     networks:
       cluster:
 
@@ -95,18 +107,30 @@ services:
       ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
       POSTGRES_USER: postgres
-      POSTGRES_PWD: password
+      POSTGRES_PWD_FILE: /run/secrets/postgres_superuser_password
       POSTGRES_SUBNET: "0.0.0.0/0"
+      PGBOUNCER_PWD_FILE: /run/secrets/pgbouncer_password
       BACKUP_NAME:
-      BACKUP_REGION:
-      BACKUP_PATH:
-      BACKUP_ACCESS_KEY:
-      BACKUP_SECRET_KEY:
+      BACKUP_REGION_FILE: /run/secrets/backup_region
+      BACKUP_PATH_FILE: /run/secrets/backup_path
+      BACKUP_ACCESS_KEY_FILE: /run/secrets/backup_access_key
+      BACKUP_SECRET_KEY_FILE: /run/secrets/backup_secret_key
       RESTORE_NAME:
-      RESTORE_NAME_REGION:
-      RESTORE_PATH:
-      RESTORE_ACCESS_KEY:
-      RESTORE_SECRET_KEY:
+      RESTORE_REGION_FILE: /run/secrets/region_restore
+      RESTORE_PATH_FILE: /run/secrets/region_path
+      RESTORE_ACCESS_KEY_FILE: /run/secrets/restore_access_key
+      RESTORE_SECRET_KEY_FILE: /run/secrets/restore_secret_key
+    secrets:
+      - postgres_superuser_password
+      - pgbouncer_password
+      - backup_path
+      - backup_region
+      - backup_access_key
+      - backup_secret_key
+      - restore_path
+      - restore_region
+      - restore_access_key
+      - restore_secret_key
     networks:
       cluster:
 
@@ -130,6 +154,28 @@ services:
       - 6000:5000
       - 6001:5001
       - 7001:7000
+
+secrets:
+  postgres_superuser_password:
+    file: ./secrets/postgres_superuser_password
+  pgbouncer_password:
+    file: ./secrets/pgbouncer_password
+  backup_path:
+    file: ./secrets/backup_path
+  backup_region:
+    file: ./secrets/backup_region
+  backup_access_key:
+    file: ./secrets/backup_access_key
+  backup_secret_key:
+    file: ./secrets/backup_secret_key
+  restore_path:
+    file: ./secrets/restore_path
+  restore_region:
+    file: ./secrets/restore_region
+  restore_access_key:
+    file: ./secrets/restore_access_key
+  restore_secret_key:
+    file: ./secrets/restore_secret_key
 
 volumes:
   etcd_01_data:
