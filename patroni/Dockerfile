@@ -17,6 +17,7 @@ RUN apk add --no-cache \
     py3-virtualenv \
     musl-locales \
     envsubst \
+    openssl \
     jq && \
   python3 -m venv /venv && \
   mkdir /venv/etc && \

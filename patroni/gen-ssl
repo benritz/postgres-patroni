@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+umask 077
+
+build_alt_host_lines() {
+  ALT_HOST_LINES=""
+  local names=()
+  add_name() {
+    local n="$1"
+    [ -z "$n" ] && return
+    for e in "${names[@]}"; do
+      [ "$e" = "$n" ] && return
+    done
+    names+=("$n")
+  }
+  local short_host fqdn
+  short_host="$(hostname -s 2>/dev/null || hostname 2>/dev/null || true)"
+  [ -z "$short_host" ] && short_host="localhost"
+  fqdn="$(hostname -f 2>/dev/null || true)"
+  [ -z "$fqdn" ] && fqdn="$short_host"
+  add_name "${SSL_CN}"
+  add_name "$short_host"
+  add_name "$fqdn"
+  add_name "localhost"
+  local i=1
+  for n in "${names[@]}"; do
+    ALT_HOST_LINES+="DNS.$i = $n"$'\n'
+    i=$((i + 1))
+  done
+}
+
+build_alt_ip_lines() {
+  local host_ips_raw
+  host_ips_raw="$(hostname -i 2>/dev/null || true)"
+  local ips=()
+
+  add_ip() {
+    local ip="$1"
+    for e in "${ips[@]}"; do
+      if [ "$e" = "$ip" ]; then
+        return
+      fi
+    done
+    ips+=("$ip")
+  }
+
+  add_ip "127.0.0.1"
+  add_ip "::1"
+
+  for ip in $host_ips_raw; do
+    if [ "$ip" != "127.0.0.1" ] && [ "$ip" != "::1" ]; then
+      add_ip "$ip"
+    fi
+  done
+
+  ALT_IP_LINES=""
+  local i=1
+  for ip in "${ips[@]}"; do
+    ALT_IP_LINES+="IP.$i = $ip"$'\n'
+    i=$((i + 1))
+  done
+}
+
+# Allow overriding of subject fields via environment variables
+: "${SSL_C:=US}"
+: "${SSL_ST:=State}"
+: "${SSL_L:=Locality}"
+: "${SSL_O:=Organization}"
+: "${SSL_OU:=Unit}"
+: "${SSL_CN:=$(hostname -f 2>/dev/null || hostname)}"
+: "${SSL_DAYS:=365}"
+
+build_alt_host_lines
+build_alt_ip_lines
+
+SSL_TARGET_DIR="${SSL_DIR:-/etc/postgresql/ssl}"
+mkdir -p "${SSL_TARGET_DIR}"
+chmod 750 "${SSL_TARGET_DIR}"
+
+WORK_DIR="$(mktemp -d gen-ssl-XXXXXX)"
+TMP_CONFIG="${WORK_DIR}/openssl.cnf"
+
+cat >"${TMP_CONFIG}" <<EOF
+[ req ]
+distinguished_name = req_distinguished_name
+prompt             = no
+x509_extensions    = v3_req
+default_md         = sha256
+default_days       = ${SSL_DAYS}
+
+[ req_distinguished_name ]
+C  = ${SSL_C}
+ST = ${SSL_ST}
+L  = ${SSL_L}
+O  = ${SSL_O}
+OU = ${SSL_OU}
+CN = ${SSL_CN}
+
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = @alt_names
+
+[ alt_names ]
+${ALT_HOST_LINES%$'\n'}
+${ALT_IP_LINES%$'\n'}
+EOF
+
+trap 'rm -rf "${WORK_DIR}"' EXIT
+
+openssl ecparam -out "${WORK_DIR}/server.key" -name prime256v1 -genkey
+chmod 600 "${WORK_DIR}/server.key"
+openssl req -new -x509 -config "${TMP_CONFIG}" -key "${WORK_DIR}/server.key" -out "${WORK_DIR}/server.crt" -batch
+cp "${WORK_DIR}/server.crt" "${WORK_DIR}/root.crt"
+
+chmod 600 "${WORK_DIR}/server.key"
+chmod 644 "${WORK_DIR}/server.crt" "${WORK_DIR}/root.crt"
+
+install -m 600 "${WORK_DIR}/server.key" "${SSL_TARGET_DIR}/server.key.tmp"
+install -m 644 "${WORK_DIR}/server.crt" "${SSL_TARGET_DIR}/server.crt.tmp"
+install -m 644 "${WORK_DIR}/root.crt" "${SSL_TARGET_DIR}/root.crt.tmp"
+
+mv -f "${SSL_TARGET_DIR}/server.key.tmp" "${SSL_TARGET_DIR}/server.key"
+mv -f "${SSL_TARGET_DIR}/server.crt.tmp" "${SSL_TARGET_DIR}/server.crt"
+mv -f "${SSL_TARGET_DIR}/root.crt.tmp" "${SSL_TARGET_DIR}/root.crt"
+
+chown -R postgres:postgres "${SSL_TARGET_DIR}"
+chmod 600 "${SSL_TARGET_DIR}/server.key"
+chmod 644 "${SSL_TARGET_DIR}/server.crt" "${SSL_TARGET_DIR}/root.crt"
+
+echo "Generated SSL artifacts in ${SSL_TARGET_DIR}:"
+ls -l "${SSL_TARGET_DIR}/server.key" "${SSL_TARGET_DIR}/server.crt" "${SSL_TARGET_DIR}/root.crt"

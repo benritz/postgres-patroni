@@ -1,6 +1,6 @@
 # postgres-patroni
 
-Postgres run by Patroni for HA, etcs for DSC, HAProxy for load balancing, pgBackRest for backup/restore, PgBouncer for connection pooling
+Postgres run by Patroni for HA, etcd for DSC, HAProxy for load balancing, pgBackRest for backup/restore, PgBouncer for connection pooling
 
 ## Environment variables
 
