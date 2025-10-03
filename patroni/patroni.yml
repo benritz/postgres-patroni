@@ -42,10 +42,6 @@ bootstrap:
     postgresql:
       use_pg_rewind: true
       pg_hba:
-        # - host replication replicator 127.0.0.1/32 scram-sha-256
-        # - host replication replicator ${POSTGRES_SUBNET} scram-sha-256
-        # - host replication ${POSTGRES_USER} ${POSTGRES_SUBNET} trust
-        # - host all all 0.0.0.0/0 scram-sha-256
         - host replication replicator 127.0.0.1/32 scram-sha-256
         - host replication replicator ::1/128 scram-sha-256
         - host replication replicator ${POSTGRES_SUBNET} scram-sha-256
@@ -55,7 +51,6 @@ bootstrap:
         - hostssl replication replicator ::1/128 scram-sha-256
         - hostssl replication replicator ${POSTGRES_SUBNET} scram-sha-256
         - hostssl all all ${POSTGRES_SUBNET} scram-sha-256
-      #  - hostssl all all 0.0.0.0/0 md5
       #      use_slots: true
       parameters:
         #        wal_level: hot_standby
