@@ -130,6 +130,3 @@ mv -f "${SSL_TARGET_DIR}/root.crt.tmp" "${SSL_TARGET_DIR}/root.crt"
 chown -R postgres:postgres "${SSL_TARGET_DIR}"
 chmod 600 "${SSL_TARGET_DIR}/server.key"
 chmod 644 "${SSL_TARGET_DIR}/server.crt" "${SSL_TARGET_DIR}/root.crt"
-
-echo "Generated SSL artifacts in ${SSL_TARGET_DIR}:"
-ls -l "${SSL_TARGET_DIR}/server.key" "${SSL_TARGET_DIR}/server.crt" "${SSL_TARGET_DIR}/root.crt"

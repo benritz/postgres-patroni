@@ -4,18 +4,19 @@ name: ${HOSTNAME}
 restapi:
   listen: 0.0.0.0:8008
   connect_address: ${HOSTNAME}:8008
-#  cafile: /etc/ssl/certs/ssl-cacert-snakeoil.pem
-#  certfile: /etc/ssl/certs/ssl-cert-snakeoil.pem
-#  keyfile: /etc/ssl/private/ssl-cert-snakeoil.key
+  certfile: /etc/postgresql/ssl/server.crt
+  keyfile: /etc/postgresql/ssl/server.key
+  cafile: /etc/postgresql/ssl/root.crt
+  verify_client: optional
 #  authentication:
 #    username: username
 #    password: password
 
-#ctl:
-#  insecure: false # Allow connections to Patroni REST API without verifying certificates
-#  certfile: /etc/ssl/certs/ssl-cert-snakeoil.pem
-#  keyfile: /etc/ssl/private/ssl-cert-snakeoil.key
-#  cacert: /etc/ssl/certs/ssl-cacert-snakeoil.pem
+ctl:
+  insecure: false
+  certfile: /etc/postgresql/ssl/server.crt
+  keyfile: /etc/postgresql/ssl/server.key
+  cafile: /etc/postgresql/ssl/root.crt
 
 etcd3:
   hosts: ${ETCD_HOSTS}
