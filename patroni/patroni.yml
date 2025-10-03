@@ -4,19 +4,19 @@ name: ${HOSTNAME}
 restapi:
   listen: 0.0.0.0:8008
   connect_address: ${HOSTNAME}:8008
-  certfile: /etc/postgresql/ssl/server.crt
-  keyfile: /etc/postgresql/ssl/server.key
-  cafile: /etc/postgresql/ssl/root.crt
-  verify_client: optional
+  # certfile: /etc/postgresql/ssl/server.crt
+  # keyfile: /etc/postgresql/ssl/server.key
+  # cafile: /etc/postgresql/ssl/root.crt
+  # verify_client: optional
 #  authentication:
 #    username: username
 #    password: password
 
 ctl:
-  insecure: false
-  certfile: /etc/postgresql/ssl/server.crt
-  keyfile: /etc/postgresql/ssl/server.key
-  cafile: /etc/postgresql/ssl/root.crt
+  # insecure: false
+  # certfile: /etc/postgresql/ssl/server.crt
+  # keyfile: /etc/postgresql/ssl/server.key
+  # cafile: /etc/postgresql/ssl/root.crt
 
 etcd3:
   hosts: ${ETCD_HOSTS}
@@ -47,10 +47,12 @@ bootstrap:
         # - host replication ${POSTGRES_USER} ${POSTGRES_SUBNET} trust
         # - host all all 0.0.0.0/0 scram-sha-256
         - host replication replicator 127.0.0.1/32 scram-sha-256
+        - host replication replicator ::1/128 scram-sha-256
         - host replication replicator ${POSTGRES_SUBNET} scram-sha-256
         - host all all ${POSTGRES_SUBNET} scram-sha-256
         - local all all trust
         - hostssl replication replicator 127.0.0.1/32 scram-sha-256
+        - hostssl replication replicator ::1/128 scram-sha-256
         - hostssl replication replicator ${POSTGRES_SUBNET} scram-sha-256
         - hostssl all all ${POSTGRES_SUBNET} scram-sha-256
       #  - hostssl all all 0.0.0.0/0 md5
@@ -71,12 +73,12 @@ bootstrap:
         #        archive_timeout: 1800s
         archive_command: pgbackrest --stanza=${BACKUP_NAME} archive-push "%p"
         restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
-        ssl: 'on'
-        ssl_cert_file: '/etc/postgresql/ssl/server.crt'
-        ssl_key_file: '/etc/postgresql/ssl/server.key'
-        ssl_ca_file: '/etc/postgresql/ssl/root.crt'
-        ssl_min_protocol_version: 'TLSv1.2'
-        ssl_prefer_server_ciphers: 'on'
+        ssl: "on"
+        ssl_cert_file: "/etc/postgresql/ssl/server.crt"
+        ssl_key_file: "/etc/postgresql/ssl/server.key"
+        ssl_ca_file: "/etc/postgresql/ssl/root.crt"
+        ssl_min_protocol_version: "TLSv1.2"
+        ssl_prefer_server_ciphers: "on"
 
   # bootstrap using pgbackrest
   method: pgbackrest

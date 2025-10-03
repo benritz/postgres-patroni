@@ -14,7 +14,7 @@ for PART in "${HOST_ARRAY[@]}"; do
     continue
   fi
   TARGET_NAME="pg${INDEX}"
-  LINE="    server ${TARGET_NAME} ${TARGET_HOST} maxconn 100 check port 8008 check-ssl verify none agent-check agent-port 8009"
+  LINE="    server ${TARGET_NAME} ${TARGET_HOST} maxconn 100 check port 8008 agent-check agent-port 8009"
   TARGETS+="${LINE}"$'\n'
   INDEX=$((INDEX + 1))
 done
