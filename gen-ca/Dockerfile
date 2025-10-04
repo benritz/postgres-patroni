@@ -13,7 +13,7 @@ set -euo pipefail
 
 CERT_PATH="${CERT_PATH:-/usr/local/etc/ssl}"
 CERT_KEY_ALGO="${CERT_KEY_ALGO:-ecdsa}"
-CERT_KEY_SIZE="${CERT_KEY_SIZE:-384}"
+CERT_KEY_SIZE="${CERT_KEY_SIZE:-256}"
 CERT_EXPIRE="${CERT_EXPIRE:-87600h}"  # 10 years
 CERT_CN="${CERT_CN:-Test CA}"
 CERT_C="${CERT_C:-US}"
