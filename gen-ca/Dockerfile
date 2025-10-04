@@ -1,12 +1,10 @@
 FROM alpine:3.22
 
-# Install bash and cfssl
 RUN apk add --no-cache bash && \
     apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 ENV CERT_PATH=/usr/local/etc/ssl
 
-# Entrypoint script to generate a CA key and certificate
 RUN cat > /usr/local/bin/gen-ca <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
