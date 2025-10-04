@@ -2,6 +2,31 @@
 
 set -euo pipefail
 
+function read_secret_var() {
+  local var="$1"
+  local read_mode="${2:-line}"
+  local file_var="${var}_FILE"
+  local current_val="${!var:-}"
+  local file_path="${!file_var:-}"
+  local file_val
+  if [[ -z "$current_val" && -n "$file_path" && -r "$file_path" ]]; then
+    if [[ "$read_mode" == "all" ]]; then
+      if IFS= read -r -d '' file_val <"$file_path" || true; then
+        export "$var"="$file_val"
+      fi
+    else
+      if IFS= read -r file_val <"$file_path" || true; then
+        export "$var"="$file_val"
+      fi
+    fi
+  fi
+}
+
+read_secret_var CA_ROOT_CERT all
+read_secret_var CA_ROOT_KEY all
+gen-ssl
+unset CA_ROOT_CERT CA_ROOT_KEY
+
 : "${TARGETS?Error: TARGETS Missing}"
 
 IFS=',' read -r -a HOST_ARRAY <<<"$TARGETS"
@@ -14,7 +39,7 @@ for PART in "${HOST_ARRAY[@]}"; do
     continue
   fi
   TARGET_NAME="pg${INDEX}"
-  LINE="    server ${TARGET_NAME} ${TARGET_HOST} maxconn 100 check port 8008 agent-check agent-port 8009 verify none"
+  LINE="    server ${TARGET_NAME} ${TARGET_HOST} maxconn 100 check port 8008 agent-check agent-port 8009 verify required ca-file /usr/local/etc/ssl/ca-root.crt"
   TARGETS+="${LINE}"$'\n'
   INDEX=$((INDEX + 1))
 done

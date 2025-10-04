@@ -173,7 +173,12 @@ services:
         max-size: "1m"
         max-file: "5"
     environment:
+      CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
+      CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
       TARGETS: pg_01:6432,pg_02:6432
+    secrets:
+      - ca_root_cert
+      - ca_root_key
     depends_on:
       - pg_01
       - pg_02

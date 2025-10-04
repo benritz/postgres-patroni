@@ -113,7 +113,7 @@ trap 'rm -rf "${WORK_DIR}"' EXIT
 # Convert days to hours for cfssl expiry format
 EXPIRY_HOURS=$((SSL_DAYS * 24))
 
-CSR_JSON="${WORK_DIR}/csr.json"
+CSR_JSON="${WORK_DIR}/server-csr.json"
 SIGNING_CONFIG_JSON="${WORK_DIR}/signing-config.json"
 
 cat >"${CSR_JSON}" <<EOF
@@ -141,19 +141,19 @@ cfssl gencert \
   -ca "${SSL_TARGET_DIR}/ca-root.crt" -ca-key "${SSL_TARGET_DIR}/ca-root.key" \
   -config "${SIGNING_CONFIG_JSON}" \
   -hostname "${HOSTS_CSV}" \
-  "${CSR_JSON}" | cfssljson -bare "${WORK_DIR}/server" >/dev/null
+  "${CSR_JSON}" | cfssljson -bare "${WORK_DIR}/client" >/dev/null
 
-chmod 600 "${WORK_DIR}/server-key.pem"
-chmod 644 "${WORK_DIR}/server.pem"
+chmod 600 "${WORK_DIR}/client-key.pem"
+chmod 644 "${WORK_DIR}/client.pem"
 
-install -m 600 "${WORK_DIR}/server-key.pem" "${SSL_TARGET_DIR}/server.key.tmp"
-install -m 644 "${WORK_DIR}/server.pem" "${SSL_TARGET_DIR}/server.crt.tmp"
+install -m 600 "${WORK_DIR}/client-key.pem" "${SSL_TARGET_DIR}/client.key.tmp"
+install -m 644 "${WORK_DIR}/client.pem" "${SSL_TARGET_DIR}/client.crt.tmp"
 
-mv -f "${SSL_TARGET_DIR}/server.key.tmp" "${SSL_TARGET_DIR}/server.key"
-mv -f "${SSL_TARGET_DIR}/server.crt.tmp" "${SSL_TARGET_DIR}/server.crt"
+mv -f "${SSL_TARGET_DIR}/client.key.tmp" "${SSL_TARGET_DIR}/client.key"
+mv -f "${SSL_TARGET_DIR}/client.crt.tmp" "${SSL_TARGET_DIR}/client.crt"
 
-chown -R postgres:postgres "${SSL_TARGET_DIR}"
-chmod 600 "${SSL_TARGET_DIR}/server.key"
-chmod 644 "${SSL_TARGET_DIR}/server.crt" "${SSL_TARGET_DIR}/ca-root.crt"
+chown -R haproxy:haproxy "${SSL_TARGET_DIR}"
+chmod 600 "${SSL_TARGET_DIR}/client.key"
+chmod 644 "${SSL_TARGET_DIR}/client.crt" "${SSL_TARGET_DIR}/ca-root.crt"
 
 rm "$SSL_TARGET_DIR/ca-root.key"

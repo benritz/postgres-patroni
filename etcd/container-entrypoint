@@ -4,13 +4,20 @@ set -e
 
 function read_secret_var() {
   local var="$1"
+  local read_mode="${2:-line}"
   local file_var="${var}_FILE"
   local current_val="${!var:-}"
   local file_path="${!file_var:-}"
   local file_val
   if [[ -z "$current_val" && -n "$file_path" && -r "$file_path" ]]; then
-    if IFS= read -r file_val <"$file_path" || true; then
-      export "$var"="$file_val"
+    if [[ "$read_mode" == "all" ]]; then
+      if IFS= read -r -d '' file_val <"$file_path" || true; then
+        export "$var"="$file_val"
+      fi
+    else
+      if IFS= read -r file_val <"$file_path" || true; then
+        export "$var"="$file_val"
+      fi
     fi
   fi
 }

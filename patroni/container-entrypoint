@@ -37,6 +37,9 @@ fi
 
 read_secret_var CA_ROOT_CERT all
 read_secret_var CA_ROOT_KEY all
+gen-ssl
+unset CA_ROOT_CERT CA_ROOT_KEY
+
 read_secret_var POSTGRES_SU_PWD
 read_secret_var POSTGRES_REPL_PWD
 read_secret_var POSTGRES_REWIND_PWD
@@ -61,7 +64,6 @@ export RESTORE_SECRET_KEY="${RESTORE_SECRET_KEY:=$BACKUP_SECRET_KEY}"
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
 write-pgbackrest-conf
-gen-ssl
 
 export PGPASSFILE=/tmp/pgpass0
 
