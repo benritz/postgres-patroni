@@ -1,8 +1,5 @@
 FROM alpine:3.22
 
-WORKDIR /usr/local/bin/
-COPY . . 
-
 RUN apk add --no-cache \
     bash \
     postgresql \
@@ -18,8 +15,12 @@ RUN apk add --no-cache \
     musl-locales \
     envsubst \
     jq && \
-  apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing && \
-  python3 -m venv /venv && \
+  apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
+  
+WORKDIR /usr/local/bin/
+COPY . . 
+
+RUN python3 -m venv /venv && \
   mkdir /venv/etc && \
   mv patroni.yml /venv/etc/patroni-template.yml && \
   mkdir -p /usr/local/etc/pgbouncer && \

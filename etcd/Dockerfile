@@ -3,7 +3,7 @@ FROM alpine:3.22
 WORKDIR /usr/local/bin/
 COPY . .
 
-RUN apk add bash etcd etcd-ctl 
+RUN apk --no-cache add bash etcd etcd-ctl 
 
 VOLUME /var/etcd-data
 
