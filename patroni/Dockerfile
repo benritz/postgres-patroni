@@ -17,8 +17,8 @@ RUN apk add --no-cache \
     py3-virtualenv \
     musl-locales \
     envsubst \
-    openssl \
     jq && \
+  apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing && \
   python3 -m venv /venv && \
   mkdir /venv/etc && \
   mv patroni.yml /venv/etc/patroni-template.yml && \

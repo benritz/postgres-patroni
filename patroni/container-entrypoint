@@ -28,6 +28,8 @@ if [[ -z "$CLUSTER" ]]; then
   exit 1
 fi
 
+read_secret_var ROOT_CA_CERT
+read_secret_var ROOT_CA_KEY
 read_secret_var POSTGRES_SU_PWD
 read_secret_var POSTGRES_REPL_PWD
 read_secret_var POSTGRES_REWIND_PWD

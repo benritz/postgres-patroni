@@ -71,6 +71,8 @@ services:
     volumes:
       - pg_01_data:/var/lib/postgresql
     environment:
+      CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
+      CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
       ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
       POSTGRES_SU_USER: postgres
@@ -87,11 +89,13 @@ services:
       BACKUP_ACCESS_KEY_FILE: /run/secrets/backup_access_key
       BACKUP_SECRET_KEY_FILE: /run/secrets/backup_secret_key
       RESTORE_NAME:
-      RESTORE_REGION_FILE: /run/secrets/region_restore
-      RESTORE_PATH_FILE: /run/secrets/region_path
+      RESTORE_REGION_FILE: /run/secrets/restore_region
+      RESTORE_PATH_FILE: /run/secrets/restore_path
       RESTORE_ACCESS_KEY_FILE: /run/secrets/restore_access_key
       RESTORE_SECRET_KEY_FILE: /run/secrets/restore_secret_key
     secrets:
+      - ca_root_cert
+      - ca_root_key
       - postgres_su_password
       - postgres_repl_password
       - postgres_rewind_password
@@ -119,6 +123,8 @@ services:
     volumes:
       - pg_02_data:/var/lib/postgresql
     environment:
+      CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
+      CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
       ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
       POSTGRES_SU_USER: postgres
@@ -135,11 +141,13 @@ services:
       BACKUP_ACCESS_KEY_FILE: /run/secrets/backup_access_key
       BACKUP_SECRET_KEY_FILE: /run/secrets/backup_secret_key
       RESTORE_NAME:
-      RESTORE_REGION_FILE: /run/secrets/region_restore
-      RESTORE_PATH_FILE: /run/secrets/region_path
+      RESTORE_REGION_FILE: /run/secrets/restore_region
+      RESTORE_PATH_FILE: /run/secrets/restore_path
       RESTORE_ACCESS_KEY_FILE: /run/secrets/restore_access_key
       RESTORE_SECRET_KEY_FILE: /run/secrets/restore_secret_key
     secrets:
+      - ca_root_cert
+      - ca_root_key
       - postgres_su_password
       - postgres_repl_password
       - postgres_rewind_password
@@ -177,6 +185,10 @@ services:
       - 7001:7000
 
 secrets:
+  ca_root_cert:
+    file: ./secrets/ca_root_cert
+  ca_root_key:
+    file: ./secrets/ca_root_key
   etcd_initial_cluster_token:
     file: ./secrets/etcd_initial_cluster_token
   postgres_su_password:
