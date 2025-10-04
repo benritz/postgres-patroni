@@ -3,7 +3,8 @@ FROM alpine:3.22
 WORKDIR /usr/local/bin/
 COPY . .
 
-RUN apk --no-cache add bash etcd etcd-ctl 
+RUN apk --no-cache add bash etcd etcd-ctl && \
+  apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 VOLUME /var/etcd-data
 

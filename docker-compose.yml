@@ -11,10 +11,14 @@ services:
     volumes:
       - etcd_01_data:/var/etcd-data
     environment:
+      CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
+      CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
       ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380,etcd_03=http://etcd_03:2380
       ETCD_INITIAL_CLUSTER_STATE: new
       ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
     secrets:
+      - ca_root_cert
+      - ca_root_key
       - etcd_initial_cluster_token
     networks:
       cluster:
@@ -31,10 +35,14 @@ services:
     volumes:
       - etcd_02_data:/var/etcd-data
     environment:
+      CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
+      CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
       ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380,etcd_03=http://etcd_03:2380
       ETCD_INITIAL_CLUSTER_STATE: new
       ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
     secrets:
+      - ca_root_cert
+      - ca_root_key
       - etcd_initial_cluster_token
     networks:
       cluster:
@@ -51,10 +59,14 @@ services:
     volumes:
       - etcd_03_data:/var/etcd-data
     environment:
+      CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
+      CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
       ETCD_INITIAL_CLUSTER: etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380,etcd_03=http://etcd_03:2380
       ETCD_INITIAL_CLUSTER_STATE: new
       ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
     secrets:
+      - ca_root_cert
+      - ca_root_key
       - etcd_initial_cluster_token
     networks:
       cluster:

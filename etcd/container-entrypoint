@@ -22,6 +22,11 @@ function read_secret_var() {
   fi
 }
 
+read_secret_var CA_ROOT_CERT all
+read_secret_var CA_ROOT_KEY all
+gen-ssl
+unset CA_ROOT_CERT CA_ROOT_KEY
+
 export ETCD_NAME="${ETCD_NAME:=$HOSTNAME}"
 
 export ETCD_DATA_DIR=/var/etcd-data
