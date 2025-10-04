@@ -1,0 +1,18 @@
+services:
+  gen-ca:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gen-ca:latest
+    volumes:
+      - ./certs:/usr/local/etc/ssl
+    environment:
+      CERT_CN: "Test CA"
+      CERT_KEY_ALGO: "ecdsa"
+      CERT_KEY_SIZE: "384"
+      CERT_C: "US"
+      CERT_ST: ""
+      CERT_L: ""
+      CERT_O: "Test"
+      CERT_OU: ""
+      CERT_EXPIRE: "87600h"
