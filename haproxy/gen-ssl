@@ -152,8 +152,11 @@ install -m 644 "${WORK_DIR}/client.pem" "${SSL_TARGET_DIR}/client.crt.tmp"
 mv -f "${SSL_TARGET_DIR}/client.key.tmp" "${SSL_TARGET_DIR}/client.key"
 mv -f "${SSL_TARGET_DIR}/client.crt.tmp" "${SSL_TARGET_DIR}/client.crt"
 
+cp /usr/local/etc/ssl/client.crt /usr/local/etc/ssl/client-combined.crt
+cat /usr/local/etc/ssl/client.key >>/usr/local/etc/ssl/client-combined.crt
+
 chown -R haproxy:haproxy "${SSL_TARGET_DIR}"
-chmod 600 "${SSL_TARGET_DIR}/client.key"
+chmod 600 "${SSL_TARGET_DIR}/client.key" "${SSL_TARGET_DIR}/client-combined.crt"
 chmod 644 "${SSL_TARGET_DIR}/client.crt" "${SSL_TARGET_DIR}/ca-root.crt"
 
 rm "$SSL_TARGET_DIR/ca-root.key"

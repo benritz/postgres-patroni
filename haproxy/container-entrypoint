@@ -39,7 +39,7 @@ for PART in "${HOST_ARRAY[@]}"; do
     continue
   fi
   TARGET_NAME="pg${INDEX}"
-  LINE="    server ${TARGET_NAME} ${TARGET_HOST} maxconn 100 check port 8008 agent-check agent-port 8009 verify required ca-file /usr/local/etc/ssl/ca-root.crt"
+  LINE="    server ${TARGET_NAME} ${TARGET_HOST} maxconn 100 check port 8008 agent-check agent-port 8009 ssl crt /usr/local/etc/ssl/client-combined.crt verify required ca-file /usr/local/etc/ssl/ca-root.crt"
   TARGETS+="${LINE}"$'\n'
   INDEX=$((INDEX + 1))
 done

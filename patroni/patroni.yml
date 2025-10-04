@@ -7,7 +7,7 @@ restapi:
   certfile: /usr/local/etc/ssl/server.crt
   keyfile: /usr/local/etc/ssl/server.key
   cafile: /usr/local/etc/ssl/ca-root.crt
-  verify_client: optional
+  verify_client: required
 #  authentication:
 #    username: username
 #    password: password
