@@ -88,20 +88,17 @@ build_sans() {
 
 # Allow overriding of subject fields via environment variables
 : "${CERT_C:=US}"
-: "${CERT_ST:=State}"
-: "${CERT_L:=Locality}"
-: "${CERT_O:=Organization}"
-: "${CERT_OU:=Unit}"
+: "${CERT_ST:=}"
+: "${CERT_L:=}"
+: "${CERT_O:=Test}"
+: "${CERT_OU:=}"
 : "${CERT_CN:=$(hostname -f 2>/dev/null || hostname)}"
-: "${CERT_EXPIRY:=8760h}"
-: "${CERT_USER:=}"
-: "${CERT_GROUP:=}"
+: "${CERT_EXPIRY:=8760h}" # 1 year
 
 build_sans
 
 WORK_DIR="$(mktemp -d gen-ssl-XXXXXX)"
 trap 'rm -rf "${WORK_DIR}"' EXIT
-
 
 CSR_JSON="${WORK_DIR}/csr.json"
 SIGNING_CONFIG_JSON="${WORK_DIR}/signing-config.json"
