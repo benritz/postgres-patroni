@@ -30,10 +30,20 @@ unset CA_ROOT_CERT CA_ROOT_KEY
 export ETCD_NAME="${ETCD_NAME:=$HOSTNAME}"
 
 export ETCD_DATA_DIR=/var/etcd-data
-export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://${HOSTNAME}:2380
-export ETCD_ADVERTISE_CLIENT_URLS=http://${HOSTNAME}:2379
-export ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
-export ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+export ETCD_INITIAL_ADVERTISE_PEER_URLS=https://${HOSTNAME}:2380
+export ETCD_ADVERTISE_CLIENT_URLS=https://${HOSTNAME}:2379
+export ETCD_LISTEN_PEER_URLS=https://0.0.0.0:2380
+export ETCD_LISTEN_CLIENT_URLS=https://0.0.0.0:2379
+
+export ETCD_CERT_FILE=/usr/local/etc/ssl/server.crt
+export ETCD_KEY_FILE=/usr/local/etc/ssl/server.key
+export ETCD_CLIENT_CERT_AUTH=true
+export ETCD_TRUSTED_CA_FILE=/usr/local/etc/ssl/ca-root.crt
+
+export ETCD_PEER_CERT_FILE=/usr/local/etc/ssl/peer.crt
+export ETCD_PEER_KEY_FILE=/usr/local/etc/ssl/peer.key
+export ETCD_PEER_CLIENT_CERT_AUTH=true
+export ETCD_PEER_TRUSTED_CA_FILE=/usr/local/etc/ssl/ca-root.crt
 
 read_secret_var ETCD_INITIAL_CLUSTER_TOKEN
 

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# override etcdctl to set the client cert
+/usr/bin/etcdctl \
+  --cacert=/usr/local/etc/ssl/ca-root.crt \
+  --cert=/usr/local/etc/ssl/client.crt \
+  --key=/usr/local/etc/ssl/client.key \
+  "$@"

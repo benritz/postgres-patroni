@@ -20,6 +20,10 @@ ctl:
 
 etcd3:
   hosts: ${ETCD_HOSTS}
+  protocol: https
+  cert: /usr/local/etc/ssl/client.crt
+  key: /usr/local/etc/ssl/client.key
+  cacert: /usr/local/etc/ssl/ca-root.crt
 
 # The bootstrap configuration. Works only when the cluster is not yet initialized.
 # If the cluster is already initialized, all changes in the `bootstrap` section are ignored!
