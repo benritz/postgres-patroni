@@ -3,23 +3,23 @@
 set -euo pipefail
 umask 077
 
-SSL_TARGET_DIR="${SSL_DIR:-/usr/local/etc/ssl}"
-mkdir -p "${SSL_TARGET_DIR}"
-chmod 750 "${SSL_TARGET_DIR}"
+CERT_TARGET_DIR="${CERT_DIR:-/usr/local/etc/ssl}"
+mkdir -p "${CERT_TARGET_DIR}"
+chmod 750 "${CERT_TARGET_DIR}"
 
 if [ -z "$CA_ROOT_CERT" ] || [ -z "$CA_ROOT_KEY" ]; then
   echo "Missing CA_ROOT_CERT/CA_ROOT_KEY vars"
   exit 1
 fi
 
-printf '%s' "$CA_ROOT_CERT" >"$SSL_TARGET_DIR/ca-root.crt"
-printf '%s' "$CA_ROOT_KEY" >"$SSL_TARGET_DIR/ca-root.key"
-chmod 644 "$SSL_TARGET_DIR/ca-root.crt"
-chmod 600 "$SSL_TARGET_DIR/ca-root.key"
+printf '%s' "$CA_ROOT_CERT" >"$CERT_TARGET_DIR/ca-root.crt"
+printf '%s' "$CA_ROOT_KEY" >"$CERT_TARGET_DIR/ca-root.key"
+chmod 644 "$CERT_TARGET_DIR/ca-root.crt"
+chmod 600 "$CERT_TARGET_DIR/ca-root.key"
 
 gen-ssl-cert "server"
 gen-ssl-cert "peer"
 gen-ssl-cert "client"
 
-chmod 644 "${SSL_TARGET_DIR}/ca-root.crt"
-rm "$SSL_TARGET_DIR/ca-root.key"
+chmod 644 "${CERT_TARGET_DIR}/ca-root.crt"
+rm "$CERT_TARGET_DIR/ca-root.key"

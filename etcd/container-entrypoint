@@ -24,6 +24,8 @@ function read_secret_var() {
 
 read_secret_var CA_ROOT_CERT all
 read_secret_var CA_ROOT_KEY all
+export CERT_USER=etcd
+export CERT_GROUP=etcd
 gen-ssl
 unset CA_ROOT_CERT CA_ROOT_KEY
 

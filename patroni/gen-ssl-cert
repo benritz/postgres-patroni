@@ -5,7 +5,7 @@ umask 077
 
 CERT_NAME=$1
 
-SSL_TARGET_DIR="${SSL_DIR:-/usr/local/etc/ssl}"
+CERT_TARGET_DIR="${CERT_DIR:-/usr/local/etc/ssl}"
 
 build_sans() {
   ALT_HOST_LINES=""
@@ -41,7 +41,7 @@ build_sans() {
   fqdn="$(hostname -f 2>/dev/null || true)"
   [ -z "$fqdn" ] && fqdn="$short_host"
 
-  add_dns "${SSL_CN}"
+  add_dns "${CERT_CN}"
   add_dns "$short_host"
   add_dns "$fqdn"
   add_dns "localhost"
@@ -87,31 +87,31 @@ build_sans() {
 }
 
 # Allow overriding of subject fields via environment variables
-: "${SSL_C:=US}"
-: "${SSL_ST:=State}"
-: "${SSL_L:=Locality}"
-: "${SSL_O:=Organization}"
-: "${SSL_OU:=Unit}"
-: "${SSL_CN:=$(hostname -f 2>/dev/null || hostname)}"
-: "${SSL_DAYS:=365}"
+: "${CERT_C:=US}"
+: "${CERT_ST:=State}"
+: "${CERT_L:=Locality}"
+: "${CERT_O:=Organization}"
+: "${CERT_OU:=Unit}"
+: "${CERT_CN:=$(hostname -f 2>/dev/null || hostname)}"
+: "${CERT_EXPIRY:=8760h}"
+: "${CERT_USER:=}"
+: "${CERT_GROUP:=}"
 
 build_sans
 
 WORK_DIR="$(mktemp -d gen-ssl-XXXXXX)"
 trap 'rm -rf "${WORK_DIR}"' EXIT
 
-# Convert days to hours for cfssl expiry format
-EXPIRY_HOURS=$((SSL_DAYS * 24))
 
 CSR_JSON="${WORK_DIR}/csr.json"
 SIGNING_CONFIG_JSON="${WORK_DIR}/signing-config.json"
 
 cat >"${CSR_JSON}" <<EOF
 {
-  "CN": "${SSL_CN}",
+  "CN": "${CERT_CN}",
   "key": { "algo": "ecdsa", "size": 256 },
   "names": [
-    { "C": "${SSL_C}", "ST": "${SSL_ST}", "L": "${SSL_L}", "O": "${SSL_O}", "OU": "${SSL_OU}" }
+    { "C": "${CERT_C}", "ST": "${CERT_ST}", "L": "${CERT_L}", "O": "${CERT_O}", "OU": "${CERT_OU}" }
   ]
 }
 EOF
@@ -121,27 +121,32 @@ cat >"${SIGNING_CONFIG_JSON}" <<EOF
   "signing": {
     "default": {
       "usages": ["digital signature", "key encipherment", "server auth", "client auth"],
-      "expiry": "${EXPIRY_HOURS}h"
+      "expiry": "${CERT_EXPIRY}"
     }
   }
 }
 EOF
 
 cfssl gencert \
-  -ca "${SSL_TARGET_DIR}/ca-root.crt" -ca-key "${SSL_TARGET_DIR}/ca-root.key" \
+  -ca "${CERT_TARGET_DIR}/ca-root.crt" -ca-key "${CERT_TARGET_DIR}/ca-root.key" \
   -config "${SIGNING_CONFIG_JSON}" \
   -hostname "${HOSTS_CSV}" \
   "${CSR_JSON}" | cfssljson -bare "${WORK_DIR}/${CERT_NAME}" >/dev/null
 
-chmod 600 "${WORK_DIR}/${CERT_NAME}-key.pem"
+cp "${WORK_DIR}/${CERT_NAME}.pem" "${WORK_DIR}/${CERT_NAME}-combined.pem"
+cat "${WORK_DIR}/${CERT_NAME}-key.pem" >>"${WORK_DIR}/${CERT_NAME}-combined.pem"
+
+chmod 600 "${WORK_DIR}/${CERT_NAME}-key.pem" "${WORK_DIR}/${CERT_NAME}-combined.pem"
 chmod 644 "${WORK_DIR}/${CERT_NAME}.pem"
 
-install -m 600 "${WORK_DIR}/${CERT_NAME}-key.pem" "${SSL_TARGET_DIR}/${CERT_NAME}.key.tmp"
-install -m 644 "${WORK_DIR}/${CERT_NAME}.pem" "${SSL_TARGET_DIR}/${CERT_NAME}.crt.tmp"
+install -m 600 "${WORK_DIR}/${CERT_NAME}-key.pem" "${CERT_TARGET_DIR}/${CERT_NAME}.key.tmp"
+install -m 600 "${WORK_DIR}/${CERT_NAME}-combined.pem" "${CERT_TARGET_DIR}/${CERT_NAME}-combined.crt.tmp"
+install -m 644 "${WORK_DIR}/${CERT_NAME}.pem" "${CERT_TARGET_DIR}/${CERT_NAME}.crt.tmp"
 
-mv -f "${SSL_TARGET_DIR}/${CERT_NAME}.key.tmp" "${SSL_TARGET_DIR}/${CERT_NAME}.key"
-mv -f "${SSL_TARGET_DIR}/${CERT_NAME}.crt.tmp" "${SSL_TARGET_DIR}/${CERT_NAME}.crt"
+mv -f "${CERT_TARGET_DIR}/${CERT_NAME}.key.tmp" "${CERT_TARGET_DIR}/${CERT_NAME}.key"
+mv -f "${CERT_TARGET_DIR}/${CERT_NAME}.crt.tmp" "${CERT_TARGET_DIR}/${CERT_NAME}.crt"
+mv -f "${CERT_TARGET_DIR}/${CERT_NAME}-combined.crt.tmp" "${CERT_TARGET_DIR}/${CERT_NAME}-combined.crt"
 
-chown -R postgres:postgres "${SSL_TARGET_DIR}"
-chmod 600 "${SSL_TARGET_DIR}/${CERT_NAME}.key"
-chmod 644 "${SSL_TARGET_DIR}/${CERT_NAME}.crt"
+chown -R ${CERT_USER}:${CERT_GROUP} "${CERT_TARGET_DIR}"
+chmod 600 "${CERT_TARGET_DIR}/${CERT_NAME}.key" "${CERT_TARGET_DIR}/${CERT_NAME}-combined.crt"
+chmod 644 "${CERT_TARGET_DIR}/${CERT_NAME}.crt"

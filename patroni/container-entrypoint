@@ -37,6 +37,8 @@ fi
 
 read_secret_var CA_ROOT_CERT all
 read_secret_var CA_ROOT_KEY all
+export CERT_USER=postgres
+export CERT_GROUP=postgres
 gen-ssl
 unset CA_ROOT_CERT CA_ROOT_KEY
 

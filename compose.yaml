@@ -13,6 +13,13 @@ services:
     environment:
       CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
       CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
+      CERT_C:
+      CERT_ST:
+      CERT_L:
+      CERT_O:
+      CERT_OU:
+      CERT_CN:
+      CERT_EXPIRY:
       ETCD_INITIAL_CLUSTER: etcd_01=https://etcd_01:2380,etcd_02=https://etcd_02:2380,etcd_03=https://etcd_03:2380
       ETCD_INITIAL_CLUSTER_STATE: new
       ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
@@ -37,6 +44,13 @@ services:
     environment:
       CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
       CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
+      CERT_C:
+      CERT_ST:
+      CERT_L:
+      CERT_O:
+      CERT_OU:
+      CERT_CN:
+      CERT_EXPIRY:
       ETCD_INITIAL_CLUSTER: etcd_01=https://etcd_01:2380,etcd_02=https://etcd_02:2380,etcd_03=https://etcd_03:2380
       ETCD_INITIAL_CLUSTER_STATE: new
       ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
@@ -61,6 +75,13 @@ services:
     environment:
       CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
       CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
+      CERT_C:
+      CERT_ST:
+      CERT_L:
+      CERT_O:
+      CERT_OU:
+      CERT_CN:
+      CERT_EXPIRY:
       ETCD_INITIAL_CLUSTER: etcd_01=https://etcd_01:2380,etcd_02=https://etcd_02:2380,etcd_03=https://etcd_03:2380
       ETCD_INITIAL_CLUSTER_STATE: new
       ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
@@ -85,6 +106,13 @@ services:
     environment:
       CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
       CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
+      CERT_C:
+      CERT_ST:
+      CERT_L:
+      CERT_O:
+      CERT_OU:
+      CERT_CN:
+      CERT_EXPIRY:
       ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
       POSTGRES_SU_USER: postgres
@@ -137,6 +165,13 @@ services:
     environment:
       CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
       CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
+      CERT_C:
+      CERT_ST:
+      CERT_L:
+      CERT_O:
+      CERT_OU:
+      CERT_CN:
+      CERT_EXPIRY:
       ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
       CLUSTER:
       POSTGRES_SU_USER: postgres
@@ -187,6 +222,13 @@ services:
     environment:
       CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
       CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
+      CERT_C:
+      CERT_ST:
+      CERT_L:
+      CERT_O:
+      CERT_OU:
+      CERT_CN:
+      CERT_EXPIRY:
       TARGETS: pg_01:6432,pg_02:6432
     secrets:
       - ca_root_cert
