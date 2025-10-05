@@ -64,11 +64,25 @@ export RESTORE_ACCESS_KEY="${RESTORE_ACCESS_KEY:=$BACKUP_ACCESS_KEY}"
 export RESTORE_SECRET_KEY="${RESTORE_SECRET_KEY:=$BACKUP_SECRET_KEY}"
 
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
+export PGPASSFILE=/tmp/pgpass0
 
 write-pgbackrest-conf
 
-export PGPASSFILE=/tmp/pgpass0
+# backup schedule
+if [[ -n "$BACKUP_CRON_FULL" || -n "$BACKUP_CRON_INCR" ]]; then
+  mkdir -p /var/log
+  {
+    if [[ -n "$BACKUP_CRON_FULL" ]]; then
+      echo "$BACKUP_CRON_FULL /usr/local/bin/pgbackrest-cron-backup full >> /var/log/pgbackrest-cron.log 2>&1"
+    fi
+    if [[ -n "$BACKUP_CRON_INCR" ]]; then
+      echo "$BACKUP_CRON_INCR /usr/local/bin/pgbackrest-cron-backup incr >> /var/log/pgbackrest-cron.log 2>&1"
+    fi
+  } | crontab -
+  crond -b -l 8 || true
+fi
 
+# pgbouncer connection pool
 export PGBOUNCER_PWD="${PGBOUNCER_PWD:=password}"
 rm -f /usr/local/etc/pgbouncer/userlist.txt
 echo "\"pgbouncer\" \"${PGBOUNCER_PWD}\"" >/usr/local/etc/pgbouncer/userlist.txt

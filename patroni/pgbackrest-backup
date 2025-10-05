@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  echo "Usage: pgbackrest-backup <full|incr|diff>" >&2
+}
+
+if [[ ${1-} == "" ]]; then
+  usage
+  exit 1
+fi
+
+TYPE="$1"
+case "$TYPE" in
+full | incr | diff) ;;
+*)
+  usage
+  exit 1
+  ;;
+esac
+
+# Only run backups on the primary
+LEADER=$(patronictl list --format=json | jq -r '.[] | select(.Role=="Leader") | .Member')
+
+if [[ "$LEADER" != "$HOSTNAME" ]]; then
+  echo "Not the leader — skipping backup"
+  exit 0
+fi
+
+BACKUP_NAME="${BACKUP_NAME:=$CLUSTER}"
+
+STANZA_STATE=$(pgbackrest --stanza="$BACKUP_NAME" --output=json info | jq -r .[0].status.message)
+
+echo "Backup stanza $BACKUP_NAME: $STANZA_STATE"
+
+if [ "$STANZA_STATE" != "ok" ]; then
+  # stanza missing - create stanza
+  echo "Creating backup stanza $BACKUP_NAME, using backup to full"
+  su-exec postgres pgbackrest --stanza="$BACKUP_NAME" --log-level-console=detail stanza-create
+  TYPE="full"
+fi
+
+echo "Starting $TYPE backup for stanza $BACKUP_NAME"
+
+START_TIME=$(date +%s)
+set +e
+su-exec postgres pgbackrest --stanza="$BACKUP_NAME" --log-level-console=detail --type="$TYPE" backup
+BACKUP_RET=$?
+set -e
+
+DURATION=$(($(date +%s) - START_TIME))
+if [[ $BACKUP_RET -eq 0 ]]; then
+  echo "Completed $TYPE backup for stanza $BACKUP_NAME after ${DURATION}s"
+else
+  echo "Backup failed with status $BACKUP_RET after ${DURATION}s"
+  exit $BACKUP_RET
+fi

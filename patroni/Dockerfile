@@ -14,7 +14,8 @@ RUN apk add --no-cache \
     py3-virtualenv \
     musl-locales \
     envsubst \
-    jq && \
+    jq \
+    dcron && \
   apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
   
 WORKDIR /usr/local/bin/

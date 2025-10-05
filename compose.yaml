@@ -136,6 +136,8 @@ services:
       BACKUP_PATH_FILE: /run/secrets/backup_path
       BACKUP_ACCESS_KEY_FILE: /run/secrets/backup_access_key
       BACKUP_SECRET_KEY_FILE: /run/secrets/backup_secret_key
+      BACKUP_CRON_FULL: "0 2 * * 0"
+      BACKUP_CRON_INCR: "0 2 * * 1-6"
       RESTORE_NAME:
       RESTORE_REGION_FILE: /run/secrets/restore_region
       RESTORE_PATH_FILE: /run/secrets/restore_path
@@ -197,6 +199,8 @@ services:
       BACKUP_PATH_FILE: /run/secrets/backup_path
       BACKUP_ACCESS_KEY_FILE: /run/secrets/backup_access_key
       BACKUP_SECRET_KEY_FILE: /run/secrets/backup_secret_key
+      BACKUP_CRON_FULL: "0 2 * * 0"
+      BACKUP_CRON_INCR: "0 2 * * 1-6"
       RESTORE_NAME:
       RESTORE_REGION_FILE: /run/secrets/restore_region
       RESTORE_PATH_FILE: /run/secrets/restore_path
