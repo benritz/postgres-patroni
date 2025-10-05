@@ -94,6 +94,8 @@ build_sans() {
 : "${CERT_OU:=}"
 : "${CERT_CN:=$(hostname -f 2>/dev/null || hostname)}"
 : "${CERT_EXPIRY:=8760h}" # 1 year
+: "${CERT_KEY_ALGO:=ecdsa}"
+: "${CERT_KEY_SIZE:=256}"
 
 build_sans
 
@@ -106,7 +108,7 @@ SIGNING_CONFIG_JSON="${WORK_DIR}/signing-config.json"
 cat >"${CSR_JSON}" <<EOF
 {
   "CN": "${CERT_CN}",
-  "key": { "algo": "ecdsa", "size": 256 },
+  "key": { "algo": "${CERT_KEY_ALGO}", "size": ${CERT_KEY_SIZE} },
   "names": [
     { "C": "${CERT_C}", "ST": "${CERT_ST}", "L": "${CERT_L}", "O": "${CERT_O}", "OU": "${CERT_OU}" }
   ]
