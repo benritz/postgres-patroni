@@ -53,4 +53,4 @@ awk -v block="$TARGETS" '
   { print }
 ' /usr/local/etc/haproxy/haproxy-template.cfg >/usr/local/etc/haproxy/haproxy.cfg
 
-exec haproxy -W -db -f /usr/local/etc/haproxy/haproxy.cfg
+exec su-exec haproxy haproxy -W -db -f /usr/local/etc/haproxy/haproxy.cfg

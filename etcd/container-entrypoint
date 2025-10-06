@@ -49,4 +49,8 @@ export ETCD_PEER_TRUSTED_CA_FILE=/usr/local/etc/ssl/ca-root.crt
 
 read_secret_var ETCD_INITIAL_CLUSTER_TOKEN
 
-etcd
+chown -R etcd:etcd /var/etcd-data/
+chown -R etcd:etcd /etc/etcd/
+
+# exec su-exec etcd etcd
+exec etcd
