@@ -55,6 +55,9 @@ read_secret_var RESTORE_REGION
 read_secret_var RESTORE_ACCESS_KEY
 read_secret_var RESTORE_SECRET_KEY
 
+NET_IFACE=$(ip -4 route show default | awk '{print $5}')
+export POSTGRES_SUBNET="${POSTGRES_SUBNET:-$(ip -4 route | awk -v i="$NET_IFACE" '$0 ~ i && /scope link/ {print $1; exit}')}"
+
 export BACKUP_NAME="${BACKUP_NAME:=$CLUSTER}"
 
 export RESTORE_NAME="${RESTORE_NAME:=$BACKUP_NAME}"

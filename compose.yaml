@@ -129,7 +129,7 @@ services:
       POSTGRES_REPL_PWD_FILE: /run/secrets/postgres_repl_password
       POSTGRES_REWIND_USER: rewinder
       POSTGRES_REWIND_PWD_FILE: /run/secrets/postgres_rewind_password
-      POSTGRES_SUBNET: "0.0.0.0/0"
+      POSTGRES_SUBNET:
       PGBOUNCER_PWD_FILE: /run/secrets/pgbouncer_password
       BACKUP_NAME:
       BACKUP_REGION_FILE: /run/secrets/backup_region
@@ -192,7 +192,7 @@ services:
       POSTGRES_REPL_PWD_FILE: /run/secrets/postgres_repl_password
       POSTGRES_REWIND_USER: rewinder
       POSTGRES_REWIND_PWD_FILE: /run/secrets/postgres_rewind_password
-      POSTGRES_SUBNET: "0.0.0.0/0"
+      POSTGRES_SUBNET:
       PGBOUNCER_PWD_FILE: /run/secrets/pgbouncer_password
       BACKUP_NAME:
       BACKUP_REGION_FILE: /run/secrets/backup_region
