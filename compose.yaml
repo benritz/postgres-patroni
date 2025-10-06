@@ -255,9 +255,9 @@ services:
     networks:
       cluster:
     ports:
-      - 6000:5000
-      - 6001:5001
-      - 7001:7000
+      - 5432:5432
+      - 5433:5433
+      - 8001:7000
 
 secrets:
   ca_root_cert:

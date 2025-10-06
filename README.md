@@ -63,3 +63,9 @@ cp .env.example .env
 ```bash
 docker compose up --build
 ```
+
+## Client Connections
+
+- Postgres read/write TLS connection to primary server: Host port `5432` → HAProxy `5432` → PgBouncer `6432` → Postgres `5432` on the primary server.
+- Postgres read-only TLS connection to any server (primary or standby): Host port `5433` → HAProxy `5433` → PgBouncer `6432` → Postgres `5432` on any server.
+- HAProxy stats web UI: Host port `8001` → HAProxy stats web UI `7000`

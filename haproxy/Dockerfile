@@ -9,4 +9,4 @@ RUN apk --no-cache add bash haproxy && \
 
 ENTRYPOINT ["container-entrypoint"]
 
-EXPOSE 5000 5001
+EXPOSE 5432 5433
