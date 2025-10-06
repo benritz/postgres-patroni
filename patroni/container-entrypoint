@@ -73,10 +73,10 @@ if [[ -n "$BACKUP_CRON_FULL" || -n "$BACKUP_CRON_INCR" ]]; then
   mkdir -p /var/log
   {
     if [[ -n "$BACKUP_CRON_FULL" ]]; then
-      echo "$BACKUP_CRON_FULL /usr/local/bin/pgbackrest-cron-backup full >> /var/log/pgbackrest-cron.log 2>&1"
+      echo "$BACKUP_CRON_FULL /usr/local/bin/pgbackrest-backup full >> /var/log/pgbackrest-backup.log 2>&1"
     fi
     if [[ -n "$BACKUP_CRON_INCR" ]]; then
-      echo "$BACKUP_CRON_INCR /usr/local/bin/pgbackrest-cron-backup incr >> /var/log/pgbackrest-cron.log 2>&1"
+      echo "$BACKUP_CRON_INCR /usr/local/bin/pgbackrest-backup incr >> /var/log/pgbackrest-backup.log 2>&1"
     fi
   } | crontab -
   crond -b -l 8 || true
