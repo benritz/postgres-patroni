@@ -1,17 +1,10 @@
 # postgres-patroni
 
-Postgres run by Patroni for HA, etcd for DSC, HAProxy for load balancing, pgBackRest for backup/restore, PgBouncer for connection pooling
+PostgreSQL high availability using Patroni, etcd for the distributed configuration store, HAProxy for load balancing, pgBackRest for backup/restore and PgBouncer for connection pooling.
 
 ## Environment variables
 
-The following variables must be set before running docker compose up.
+The following must be set before running docker compose up.
 
-- CLUSTER - the name of the cluster
-
-ETCD_NAME - defaults to hostname
-ETCD_INITIAL_CLUSTER - no default, e.g. "etcd_01=http://etcd_01:2380,etcd_02=http://etcd_02:2380"
-
-- BACKUP_REGION
-- BACKUP_PATH
-- BACKUP_ACCESS_KEY
-- BACKUP_SECRET_KEY
+- CLUSTER - the name of the cluster.
+- CA_ROOT_CERT and CA_ROOT_KEY - the root certificate and key used to sign the certificates used by the services, these can be set using docker secrets and the CA_ROOT_KEY_FILE/CA_ROOT_KEY_FILE vars.

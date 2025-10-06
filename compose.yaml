@@ -24,11 +24,11 @@ services:
       CERT_KEY_SIZE:
       ETCD_INITIAL_CLUSTER: etcd_01=https://etcd_01:2380,etcd_02=https://etcd_02:2380,etcd_03=https://etcd_03:2380
       ETCD_INITIAL_CLUSTER_STATE: new
-      ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
+      # ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
     secrets:
       - ca_root_cert
       - ca_root_key
-      - etcd_initial_cluster_token
+      # - etcd_initial_cluster_token
     networks:
       cluster:
 
@@ -57,11 +57,11 @@ services:
       CERT_KEY_SIZE:
       ETCD_INITIAL_CLUSTER: etcd_01=https://etcd_01:2380,etcd_02=https://etcd_02:2380,etcd_03=https://etcd_03:2380
       ETCD_INITIAL_CLUSTER_STATE: new
-      ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
+      # ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
     secrets:
       - ca_root_cert
       - ca_root_key
-      - etcd_initial_cluster_token
+      # - etcd_initial_cluster_token
     networks:
       cluster:
 
@@ -90,11 +90,11 @@ services:
       CERT_KEY_SIZE:
       ETCD_INITIAL_CLUSTER: etcd_01=https://etcd_01:2380,etcd_02=https://etcd_02:2380,etcd_03=https://etcd_03:2380
       ETCD_INITIAL_CLUSTER_STATE: new
-      ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
+      # ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
     secrets:
       - ca_root_cert
       - ca_root_key
-      - etcd_initial_cluster_token
+      # - etcd_initial_cluster_token
     networks:
       cluster:
 
