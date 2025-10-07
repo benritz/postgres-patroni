@@ -15,6 +15,7 @@ RUN apk add --no-cache \
     musl-locales \
     envsubst \
     jq \
+    shadow \
     dcron && \
   apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
   
@@ -30,6 +31,8 @@ RUN python3 -m venv /venv && \
   mkdir -p /var/run/pgbouncer && \
   chown -R pgbouncer /var/run/pgbouncer && \
   chown -R pgbouncer /usr/local/etc/pgbouncer && \
+  chsh -s /bin/bash pgbouncer && \
+  usermod -m -d /home/pgbouncer pgbouncer || true && mkdir -p /home/pgbouncer && chown -R pgbouncer:postgres /home/pgbouncer && \
   mv pgbackrest-template.conf /etc/pgbackrest/pgbackrest-template.conf && \
   mkdir -p /tmp/pgbackrest && \
   chown -R postgres /tmp/pgbackrest && \

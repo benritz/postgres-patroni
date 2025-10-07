@@ -55,9 +55,7 @@ read_secret_var RESTORE_REGION
 read_secret_var RESTORE_ACCESS_KEY
 read_secret_var RESTORE_SECRET_KEY
 
-NET_IFACE=$(ip -4 route show default | awk '{print $5}')
-export POSTGRES_SUBNET="${POSTGRES_SUBNET:-$(ip -4 route | awk -v i="$NET_IFACE" '$0 ~ i && /scope link/ {print $1; exit}')}"
-
+# backup/restore config
 export BACKUP_NAME="${BACKUP_NAME:=$CLUSTER}"
 
 export RESTORE_NAME="${RESTORE_NAME:=$BACKUP_NAME}"
@@ -65,9 +63,6 @@ export RESTORE_PATH="${RESTORE_PATH:=$BACKUP_PATH}"
 export RESTORE_REGION="${RESTORE_REGION:=$BACKUP_REGION}"
 export RESTORE_ACCESS_KEY="${RESTORE_ACCESS_KEY:=$BACKUP_ACCESS_KEY}"
 export RESTORE_SECRET_KEY="${RESTORE_SECRET_KEY:=$BACKUP_SECRET_KEY}"
-
-envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
-export PGPASSFILE=/tmp/pgpass0
 
 write-pgbackrest-conf
 
@@ -85,10 +80,13 @@ if [[ -n "$BACKUP_CRON_FULL" || -n "$BACKUP_CRON_INCR" ]]; then
   crond -b -l 8 || true
 fi
 
-# pgbouncer connection pool
-export PGBOUNCER_PWD="${PGBOUNCER_PWD:=password}"
-rm -f /usr/local/etc/pgbouncer/userlist.txt
-echo "\"pgbouncer\" \"${PGBOUNCER_PWD}\"" >/usr/local/etc/pgbouncer/userlist.txt
+# patroni config
+NI=$(ip -4 route show default | awk '{print $5}')
+export POSTGRES_SUBNET="${POSTGRES_SUBNET:-$(ip -4 route | awk -v i="$NI" '$0 ~ i && /scope link/ {print $1; exit}')}"
+
+envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
+
+# pgbouncer
 pgbouncer -d -q /usr/local/etc/pgbouncer/pgbouncer.ini
 pgbouncer-haproxy-agent
 

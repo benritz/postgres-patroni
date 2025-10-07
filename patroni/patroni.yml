@@ -52,6 +52,7 @@ bootstrap:
         # - host all all 127.0.0.1/32 scram-sha-256
         # - host all all ::1/128 scram-sha-256
         # - host all all ${POSTGRES_SUBNET} scram-sha-256
+         - local all pgbouncer peer 
          - local all all scram-sha-256
          - hostssl replication ${POSTGRES_REPL_USER} 127.0.0.1/32 scram-sha-256
          - hostssl replication ${POSTGRES_REPL_USER} ::1/128 scram-sha-256
@@ -110,7 +111,7 @@ postgresql:
   proxy_address: ${HOSTNAME}:6432
   data_dir: /var/lib/postgresql/data
   bin_dir: /usr/bin
-  pgpass: /tmp/pgpass0
+  # pgpass: /tmp/pgpass0
   authentication:
     superuser:
       username: ${POSTGRES_SU_USER}
