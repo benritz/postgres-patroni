@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 import os, socket
 
-# PgBouncer-only HAProxy agent line protocol.
-# Sends a single line then closes. HAProxy parses first tokens.
-# Output: 'ready' when PgBouncer TCP port is reachable, otherwise 'down'.
-# (Could also append weight directives: e.g., 'ready weight 100'.)
+# haproxy agent for haproxy health checks
+# see https://www.haproxy.com/documentation/haproxy-configuration-tutorials/reliability/health-checks/#agent-checks
+# Output: 'up' when PgBouncer TCP port is reachable, otherwise 'down'.
 
 PGBOUNCER_HOST = os.getenv("PGBOUNCER_HOST", "127.0.0.1")
 PGBOUNCER_PORT = int(os.getenv("PGBOUNCER_PORT", "6432"))
