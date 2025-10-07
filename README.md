@@ -40,7 +40,6 @@ cp .env.example .env
 - POSTGRES_SU_PWD_FILE: Secret for superuser password (`./secrets/postgres_su_password`).
 - POSTGRES_REPL_PWD_FILE: Secret for replication user (`./secrets/postgres_repl_password`).
 - POSTGRES_REWIND_PWD_FILE: Secret for rewind user (`./secrets/postgres_rewind_password`).
-- PGBOUNCER_PWD_FILE: Secret for PgBouncer auth (`./secrets/pgbouncer_password`).
 
 ### pgBackRest Backup
 

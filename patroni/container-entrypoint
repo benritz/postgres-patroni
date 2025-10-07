@@ -45,7 +45,6 @@ unset CA_ROOT_CERT CA_ROOT_KEY
 read_secret_var POSTGRES_SU_PWD
 read_secret_var POSTGRES_REPL_PWD
 read_secret_var POSTGRES_REWIND_PWD
-read_secret_var PGBOUNCER_PWD
 read_secret_var BACKUP_PATH
 read_secret_var BACKUP_REGION
 read_secret_var BACKUP_ACCESS_KEY

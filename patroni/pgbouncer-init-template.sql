@@ -7,7 +7,7 @@ AS $$
   SELECT rolname::text AS username, rolpassword::text AS password FROM pg_authid WHERE rolname = p_username;
 $$;
 
-CREATE ROLE pgbouncer LOGIN PASSWORD '${PGBOUNCER_PWD}';
+CREATE ROLE pgbouncer LOGIN;
 
 REVOKE ALL ON FUNCTION pgbouncer.lookup(text) FROM PUBLIC;
 
