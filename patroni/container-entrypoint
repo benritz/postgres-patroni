@@ -86,6 +86,8 @@ export POSTGRES_SUBNET="${POSTGRES_SUBNET:-$(ip -4 route | awk -v i="$NI" '$0 ~ 
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
 # pgbouncer
+mkdir -p /var/log/pgbouncer
+chown -R pgbouncer:postgres /var/log/pgbouncer
 pgbouncer -d -q /usr/local/etc/pgbouncer/pgbouncer.ini
 pgbouncer-haproxy-agent
 

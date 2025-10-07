@@ -253,7 +253,6 @@ services:
     ports:
       - 5432:5432
       - 5433:5433
-      - 8001:7000
 
 secrets:
   ca_root_cert:
