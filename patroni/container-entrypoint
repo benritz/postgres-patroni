@@ -85,6 +85,16 @@ export POSTGRES_SUBNET="${POSTGRES_SUBNET:-$(ip -4 route | awk -v i="$NI" '$0 ~ 
 
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
+# disable backup config if required
+if [[ -z "${BACKUP_PATH:-}" ]]; then
+  sed -i '/^\s*# BACKUP_BEGIN\s*$/,/^\s*# BACKUP_END\s*$/d' /venv/etc/patroni.yml
+fi
+
+# disable restore config if required
+if [[ -z "${RESTORE_PATH:-}" ]]; then
+  sed -i '/^\s*# RESTORE_BEGIN\s*$/,/^\s*# RESTORE_END\s*$/d' /venv/etc/patroni.yml
+fi
+
 # pgbouncer
 mkdir -p /var/log/pgbouncer
 chown -R pgbouncer:postgres /var/log/pgbouncer

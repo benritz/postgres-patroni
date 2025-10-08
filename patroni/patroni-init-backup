@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [[ -z "${BACKUP_PATH:-}" ]]; then
+  echo "Skipping backup stanza init: BACKUP_PATH not set"
+  exit 0
+fi
+
 BACKUP_NAME="${BACKUP_NAME:=$CLUSTER}"
 
 STANZA_STATE=$(pgbackrest --stanza="$BACKUP_NAME" --output=json info | jq -r .[0].status.message)

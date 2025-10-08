@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [[ -z "${BACKUP_PATH:-}" ]]; then
+  echo "Skipping backup: BACKUP_PATH not set"
+  exit 0
+fi
+
 usage() {
   echo "Usage: pgbackrest-backup <full|incr|diff>" >&2
 }

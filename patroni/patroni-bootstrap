@@ -2,6 +2,19 @@
 
 set -euo pipefail
 
+function init_db() {
+  # restore stanza missing - init db
+  # patroni-post-bootstrap.sh will create stanza when primary is available
+  echo "No backup stanza - init db"
+  initdb -D /var/lib/postgresql/data --encoding UTF8 --data-checksums
+  touch /var/run/postgresql/post-init-db
+}
+
+if [[ -z "${RESTORE_PATH:-}" ]]; then
+  init_db
+  exit 0
+fi
+
 if [[ -z "${RESTORE_NAME:-}" ]]; then
   echo "Error: Missing RESTORE_NAME."
   exit 1
@@ -12,13 +25,9 @@ STANZA_STATE=$(pgbackrest --stanza="$RESTORE_NAME" --output=json info | jq -r .[
 echo "Backup stanza $RESTORE_NAME: $STANZA_STATE"
 
 if [ "$STANZA_STATE" == "ok" ]; then
-  # stanza ok - restore db
+  # restore stanza ok - restore db
   echo "Restoring from backup stanza $RESTORE_NAME"
   pgbackrest --stanza="$RESTORE_NAME" --log-level-console=detail restore
 else
-  # stanza missing - init db
-  # patroni-post-bootstrap.sh will create stanza when primary is available
-  echo "No backup stanza - init db"
-  initdb -D /var/lib/postgresql/data --encoding UTF8 --data-checksums
-  touch /var/run/postgresql/post-init-db
+  init_db
 fi

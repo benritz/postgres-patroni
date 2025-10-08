@@ -75,8 +75,10 @@ bootstrap:
         #        track_commit_timestamp: "off"
         archive_mode: "on"
         #        archive_timeout: 1800s
+        # BACKUP_BEGIN
         archive_command: pgbackrest --stanza=${BACKUP_NAME} archive-push "%p"
         restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
+        # BACKUP_END
         ssl: "on"
         ssl_cert_file: "/usr/local/etc/ssl/server.crt"
         ssl_key_file: "/usr/local/etc/ssl/server.key"
@@ -94,7 +96,9 @@ bootstrap:
     recovery_conf:
       recovery_target_timeline: latest
       recovery_target_action: promote
+      # RESTORE_BEGIN
       restore_command: pgbackrest --stanza=${RESTORE_NAME} archive-get %f "%p"
+      # RESTORE_END
 
   post_bootstrap: patroni-post-bootstrap
 
@@ -126,12 +130,16 @@ postgresql:
     unix_socket_directories: /run/postgresql
   #pre_promote: /path/to/pre_promote.sh
   create_replica_methods:
+    # BACKUP_BEGIN
     - pgbackrest
+    # BACKUP_END
     - basebackup
+  # BACKUP_BEGIN
   pgbackrest:
     command: pgbackrest --stanza=${BACKUP_NAME} restore --type=none
     keep_data: true
     no_params: true
+  # BACKUP_END
   basebackup:
     checkpoint: "fast"
   callbacks:

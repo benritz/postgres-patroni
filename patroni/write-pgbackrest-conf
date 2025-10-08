@@ -44,7 +44,7 @@ RESTORE_NAME_VALUE="${RESTORE_NAME:-$BACKUP_NAME}"
 
 if [[ "${RESTORE_NAME_VALUE}" == "${BACKUP_NAME}" ]]; then
   # No separate restore stanza; remove it entirely
-  sed -i '/# RESTORE_STANZA_BEGIN/,/# RESTORE_STANZA_END/d' /etc/pgbackrest/tmp.conf
+  sed -i '/# RESTORE_BEGIN/,/# RESTORE_END/d' /etc/pgbackrest/tmp.conf
 else
   # validate required restore vars
   if [[ -z "${RESTORE_PATH:-}" ]]; then
