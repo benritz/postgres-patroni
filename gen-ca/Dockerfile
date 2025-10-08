@@ -12,7 +12,7 @@ set -euo pipefail
 CERT_PATH="${CERT_PATH:-/usr/local/etc/ssl}"
 CERT_KEY_ALGO="${CERT_KEY_ALGO:-ecdsa}"
 CERT_KEY_SIZE="${CERT_KEY_SIZE:-256}"
-CERT_EXPIRE="${CERT_EXPIRE:-87600h}"  # 10 years
+CERT_EXPIRY="${CERT_EXPIRY:-87600h}"  # 10 years
 CERT_CN="${CERT_CN:-Test CA}"
 CERT_C="${CERT_C:-US}"
 CERT_ST="${CERT_ST:-}"
@@ -40,7 +40,7 @@ cat > "$CSR_JSON" <<JSON
     }
   ],
   "ca": {
-    "expiry": "${CERT_EXPIRE}"
+    "expiry": "${CERT_EXPIRY}"
   }
 }
 JSON

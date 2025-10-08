@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 if [[ -f "/var/run/postgresql/post-init-db" ]]; then
   echo "Running post init db scripts"

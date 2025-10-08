@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 # backup vars
 if [[ -z "$BACKUP_NAME" ]]; then

@@ -15,4 +15,4 @@ services:
       CERT_L:
       CERT_O:
       CERT_OU:
-      CERT_EXPIRE:
+      CERT_EXPIRY:

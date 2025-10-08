@@ -1,6 +1,6 @@
 # postgres-patroni
 
-PostgreSQL high availability using Patroni, etcd for the distributed configuration store, HAProxy for load balancing, pgBackRest for backup/restore and PgBouncer for connection pooling.
+PostgreSQL high availability implemented by Patroni, etcd for the distributed configuration store, HAProxy for load balancing, pgBackRest for backup/restore and PgBouncer for connection pooling.
 
 ## Environment variables
 
@@ -65,6 +65,5 @@ docker compose up --build
 
 ## Client Connections
 
-- Postgres read/write TLS connection to primary server: Host port `5432` → HAProxy `5432` → PgBouncer `6432` → Postgres `5432` on the primary server.
-- Postgres read-only TLS connection to any server (primary or standby): Host port `5433` → HAProxy `5433` → PgBouncer `6432` → Postgres `5432` on any server.
-- HAProxy stats web UI: Host port `8001` → HAProxy stats web UI `7000`
+- Postgres read/write connection to primary server: Docker Host `tcp/tls:5432` → HAProxy `tcp/tls:5432` → PgBouncer `tcp/ssl:6432` → Postgres `unix socket` on the primary server.
+- Postgres read-only TLS connection to any server (primary or standby): Docker Host `tcp/tls:5433` → HAProxy `tcp/tls:5433` → PgBouncer `tcp/ssl:6432` → Postgres `unix socket` on any server.

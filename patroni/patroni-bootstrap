@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 if [[ -z "$RESTORE_NAME" ]]; then
   echo "Error: Missing RESTORE_NAME."
