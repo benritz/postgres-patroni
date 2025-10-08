@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 BACKUP_NAME="${BACKUP_NAME:=$CLUSTER}"
 
 STANZA_STATE=$(pgbackrest --stanza="$BACKUP_NAME" --output=json info | jq -r .[0].status.message)
+
+if [[ "$RESTORE_NAME" != "$BACKUP_NAME" ]] && [[ "$STANZA_STATE" == "ok" ]]; then
+  # db has been restored from a different stanza, delete existing backup stanza and recreate
+  echo "Deleting backup stanza $BACKUP_NAME to recreate from restore stanza $RESTORE_NAME"
+  pgbackrest --stanza="$BACKUP_NAME" stop
+  pgbackrest --stanza="$BACKUP_NAME" stanza-delete --force
+  STANZA_STATE="recreate"
+fi
 
 echo "Backup stanza $BACKUP_NAME: $STANZA_STATE"
 
