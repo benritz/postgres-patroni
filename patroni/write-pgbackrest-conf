@@ -3,68 +3,83 @@
 set -euo pipefail
 
 # backup vars
-if [[ -z "$BACKUP_NAME" ]]; then
+if [[ -z "${BACKUP_NAME:-}" ]]; then
   echo "Error: Missing BACKUP_NAME."
   exit 1
 fi
 
-if [[ -z "$BACKUP_PATH" ]]; then
+if [[ -z "${BACKUP_PATH:-}" ]]; then
   echo "Error: Missing BACKUP_PATH."
   exit 1
 fi
 
-if [[ -z "$BACKUP_REGION" ]]; then
+if [[ -z "${BACKUP_REGION:-}" ]]; then
   echo "Error: Missing BACKUP_REGION."
   exit 1
 fi
 
-if [[ -z "$BACKUP_RETENTION" ]]; then
-  export BACKUP_RETENTION=4
-fi
+export BACKUP_RETENTION="${BACKUP_RETENTION:-4}"
 
-BACKUP_S3_BUCKET=$(echo "$BACKUP_PATH" | sed -E 's|^s3://([^/]+)/.*$|\1|')
-BACKUP_S3_PATH=$(echo "$BACKUP_PATH" | sed -E 's|^s3://[^/]+/(.*)$|\1|')
+BACKUP_S3_BUCKET=$(echo "${BACKUP_PATH}" | sed -E 's|^s3://([^/]+)/.*$|\1|')
+BACKUP_S3_PATH=$(echo "${BACKUP_PATH}" | sed -E 's|^s3://[^/]+/(.*)$|\1|')
 
-if [[ -z "$BACKUP_S3_BUCKET" ]]; then
+if [[ -z "${BACKUP_S3_BUCKET}" ]]; then
   echo "Error: Invalid BACKUP_PATH."
   exit 1
 fi
 
-if [[ "$BACKUP_S3_PATH" == "$BACKUP_PATH" ]]; then
+if [[ "${BACKUP_S3_PATH}" == "${BACKUP_PATH}" ]]; then
   BACKUP_S3_PATH=""
 fi
 
 export BACKUP_S3_BUCKET
 export BACKUP_S3_PATH
 
-# restore vars
-RESTORE_S3_BUCKET=$(echo "$RESTORE_PATH" | sed -E 's|^s3://([^/]+)/.*$|\1|')
-RESTORE_S3_PATH=$(echo "$RESTORE_PATH" | sed -E 's|^s3://[^/]+/(.*)$|\1|')
-
-if [[ -z "$RESTORE_S3_BUCKET" ]]; then
-  echo "Error: Invalid RESTORE_PATH."
-  exit 1
-fi
-
-if [[ "$RESTORE_S3_PATH" == "$RESTORE_PATH" ]]; then
-  RESTORE_S3_PATH=""
-fi
-
-export RESTORE_S3_BUCKET
-export RESTORE_S3_PATH
-
+# prepare working template
 rm -f /etc/pgbackrest/tmp.conf
 cp /etc/pgbackrest/pgbackrest-template.conf /etc/pgbackrest/tmp.conf
 
-if [[ "$RESTORE_NAME" == "$BACKUP_NAME" ]]; then
+# decide whether to include restore stanza
+RESTORE_NAME_VALUE="${RESTORE_NAME:-$BACKUP_NAME}"
+
+if [[ "${RESTORE_NAME_VALUE}" == "${BACKUP_NAME}" ]]; then
+  # No separate restore stanza; remove it entirely
   sed -i '/# RESTORE_STANZA_BEGIN/,/# RESTORE_STANZA_END/d' /etc/pgbackrest/tmp.conf
 else
-  if [[ -z "$RESTORE_ACCESS_KEY" || -z "$RESTORE_SECRET_KEY" ]]; then
+  # validate required restore vars
+  if [[ -z "${RESTORE_PATH:-}" ]]; then
+    echo "Error: Missing RESTORE_PATH."
+    exit 1
+  fi
+  if [[ -z "${RESTORE_REGION:-}" ]]; then
+    echo "Error: Missing RESTORE_REGION."
+    exit 1
+  fi
+  export RESTORE_RETENTION="${RESTORE_RETENTION:-${BACKUP_RETENTION}}"
+
+  RESTORE_S3_BUCKET=$(echo "${RESTORE_PATH}" | sed -E 's|^s3://([^/]+)/.*$|\1|')
+  RESTORE_S3_PATH=$(echo "${RESTORE_PATH}" | sed -E 's|^s3://[^/]+/(.*)$|\1|')
+
+  if [[ -z "${RESTORE_S3_BUCKET}" ]]; then
+    echo "Error: Invalid RESTORE_PATH."
+    exit 1
+  fi
+
+  if [[ "${RESTORE_S3_PATH}" == "${RESTORE_PATH}" ]]; then
+    RESTORE_S3_PATH=""
+  fi
+
+  export RESTORE_S3_BUCKET
+  export RESTORE_S3_PATH
+
+  # optional restore auth
+  if [[ -z "${RESTORE_ACCESS_KEY:-}" || -z "${RESTORE_SECRET_KEY:-}" ]]; then
     sed -i '/# RESTORE_AUTH_BEGIN/,/# RESTORE_AUTH_END/d' /etc/pgbackrest/tmp.conf
   fi
 fi
 
-if [[ -z "$BACKUP_ACCESS_KEY" || -z "$BACKUP_SECRET_KEY" ]]; then
+# optional backup auth
+if [[ -z "${BACKUP_ACCESS_KEY:-}" || -z "${BACKUP_SECRET_KEY:-}" ]]; then
   sed -i '/# BACKUP_AUTH_BEGIN/,/# BACKUP_AUTH_END/d' /etc/pgbackrest/tmp.conf
 fi
 
