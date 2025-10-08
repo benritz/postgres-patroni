@@ -1,6 +1,5 @@
 FROM alpine:3.22 AS builder
 
-# Builder stage: install build deps and compile Python wheels into a venv
 RUN apk add --no-cache \
     python3 \
     py3-pip \
@@ -10,7 +9,6 @@ RUN apk add --no-cache \
     linux-headers \
     python3-dev
 
-# Create venv and install Python dependencies
 RUN python3 -m venv /venv && \
     /venv/bin/pip install --upgrade pip && \
     /venv/bin/pip install psycopg2 && \
@@ -19,7 +17,6 @@ RUN python3 -m venv /venv && \
 
 FROM alpine:3.22
 
-# Runtime stage: only runtime deps (no compilers/headers/python3-dev)
 RUN apk add --no-cache \
     bash \
     postgresql \

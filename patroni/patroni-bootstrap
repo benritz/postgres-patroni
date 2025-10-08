@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-if [[ -z "$RESTORE_NAME" ]]; then
+if [[ -z "${RESTORE_NAME:-}" ]]; then
   echo "Error: Missing RESTORE_NAME."
   exit 1
 fi
