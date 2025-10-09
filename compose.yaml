@@ -158,6 +158,10 @@ services:
       - restore_secret_key
     networks:
       cluster:
+    depends_on:
+      - etcd_01
+      - etcd_02
+      - etcd_03
 
   pg_02:
     build: ./patroni
@@ -219,6 +223,10 @@ services:
       - restore_secret_key
     networks:
       cluster:
+    depends_on:
+      - etcd_01
+      - etcd_02
+      - etcd_03
 
   haproxy_01:
     build: ./haproxy
