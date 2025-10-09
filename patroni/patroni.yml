@@ -73,9 +73,9 @@ bootstrap:
         #        max_locks_per_transaction: 64
         #        wal_log_hints: "on"
         #        track_commit_timestamp: "off"
-        archive_mode: "on"
         #        archive_timeout: 1800s
         # BACKUP_BEGIN
+        archive_mode: "on"
         archive_command: pgbackrest --stanza=${BACKUP_NAME} archive-push "%p"
         restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
         # BACKUP_END
@@ -93,12 +93,12 @@ bootstrap:
     command: patroni-bootstrap
     keep_existing_recovery_conf: true
     no_params: false
+    # RESTORE_BEGIN
     recovery_conf:
       recovery_target_timeline: latest
       recovery_target_action: promote
-      # RESTORE_BEGIN
       restore_command: pgbackrest --stanza=${RESTORE_NAME} archive-get %f "%p"
-      # RESTORE_END
+    # RESTORE_END
 
   post_bootstrap: patroni-post-bootstrap
 
