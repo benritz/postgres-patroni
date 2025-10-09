@@ -1,6 +1,6 @@
 x-cert-vars: &cert-vars
-  CA_ROOT_CERT_FILE: /run/secrets/ca_root_cert
-  CA_ROOT_KEY_FILE: /run/secrets/ca_root_key
+  CA_ROOT_CERT: file:/run/secrets/ca_root_cert
+  CA_ROOT_KEY: file:/run/secrets/ca_root_key
   CERT_C:
   CERT_ST:
   CERT_L:
@@ -15,7 +15,7 @@ x-etcd-vars: &etcd-vars
   <<: *cert-vars
   ETCD_INITIAL_CLUSTER: etcd_01=https://etcd_01:2380,etcd_02=https://etcd_02:2380,etcd_03=https://etcd_03:2380
   ETCD_INITIAL_CLUSTER_STATE: new
-  # ETCD_INITIAL_CLUSTER_TOKEN_FILE: /run/secrets/etcd_initial_cluster_token
+  # ETCD_INITIAL_CLUSTER_TOKEN: file:/run/secrets/etcd_initial_cluster_token
 
 x-etcd-secrets: &etcd-secrets
   - ca_root_cert
@@ -27,24 +27,24 @@ x-pg-vars: &pg-vars
   ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
   CLUSTER:
   POSTGRES_SU_USER: postgres
-  POSTGRES_SU_PWD_FILE: /run/secrets/postgres_su_password
+  POSTGRES_SU_PWD: file:/run/secrets/postgres_su_password
   POSTGRES_REPL_USER: replicator
-  POSTGRES_REPL_PWD_FILE: /run/secrets/postgres_repl_password
+  POSTGRES_REPL_PWD: file:/run/secrets/postgres_repl_password
   POSTGRES_REWIND_USER: rewinder
-  POSTGRES_REWIND_PWD_FILE: /run/secrets/postgres_rewind_password
+  POSTGRES_REWIND_PWD: file:/run/secrets/postgres_rewind_password
   POSTGRES_SUBNET:
   BACKUP_NAME:
-  BACKUP_REGION_FILE: /run/secrets/backup_region
-  BACKUP_PATH_FILE: /run/secrets/backup_path
-  BACKUP_ACCESS_KEY_FILE: /run/secrets/backup_access_key
-  BACKUP_SECRET_KEY_FILE: /run/secrets/backup_secret_key
+  BACKUP_REGION: file:/run/secrets/backup_region
+  BACKUP_PATH: file:/run/secrets/backup_path
+  BACKUP_ACCESS_KEY: file:/run/secrets/backup_access_key
+  BACKUP_SECRET_KEY: file:/run/secrets/backup_secret_key
   BACKUP_CRON_FULL: "0 2 * * 0"
   BACKUP_CRON_INCR: "0 2 * * 1-6"
   RESTORE_NAME:
-  RESTORE_REGION_FILE: /run/secrets/restore_region
-  RESTORE_PATH_FILE: /run/secrets/restore_path
-  RESTORE_ACCESS_KEY_FILE: /run/secrets/restore_access_key
-  RESTORE_SECRET_KEY_FILE: /run/secrets/restore_secret_key
+  RESTORE_REGION: file:/run/secrets/restore_region
+  RESTORE_PATH: file:/run/secrets/restore_path
+  RESTORE_ACCESS_KEY: file:/run/secrets/restore_access_key
+  RESTORE_SECRET_KEY: file:/run/secrets/restore_secret_key
 
 x-pg-secrets: &pg-secrets
   - ca_root_cert

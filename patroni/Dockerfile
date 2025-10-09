@@ -28,7 +28,9 @@ RUN apk add --no-cache \
     envsubst \
     jq \
     shadow \
-    dcron && \
+    dcron \
+    ca-certificates \
+    aws-cli && \
   apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
   
 WORKDIR /usr/local/bin/

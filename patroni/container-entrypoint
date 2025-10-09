@@ -5,19 +5,35 @@ set -euo pipefail
 function read_secret_var() {
   local var="$1"
   local read_mode="${2:-line}"
-  local file_var="${var}_FILE"
-  local current_val="${!var:-}"
-  local file_path="${!file_var:-}"
-  local file_val
-  if [[ -z "$current_val" && -n "$file_path" && -r "$file_path" ]]; then
-    if [[ "$read_mode" == "all" ]]; then
-      if IFS= read -r -d '' file_val <"$file_path" || true; then
-        export "$var"="$file_val"
+  local value="${!var:-}"
+  local resolved=""
+
+  if [[ -n "$value" ]]; then
+    if [[ "$value" == file:* ]]; then
+      local path="${value#file:}"
+      if [[ "$read_mode" == "all" ]]; then
+        if [[ -r "$path" ]]; then
+          resolved="$(cat -- "$path" 2>/dev/null || true)"
+        fi
+      else
+        if [[ -r "$path" ]]; then
+          IFS= read -r resolved <"$path" || true
+        fi
       fi
+    elif [[ "$value" == ssm:* ]]; then
+      local param="${value#ssm:}"
+      if command -v aws >/dev/null 2>&1; then
+        resolved="$(aws ssm get-parameter --name "$param" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || true)"
+      else
+        echo "Warning: aws CLI not found; cannot fetch SSM param for $var" >&2
+      fi
+    elif [[ "$value" == value:* ]]; then
+      resolved="${value#value:}"
     else
-      if IFS= read -r file_val <"$file_path" || true; then
-        export "$var"="$file_val"
-      fi
+      resolved="$value"
+    fi
+    if [[ -n "$resolved" ]]; then
+      export "$var"="$resolved"
     fi
   fi
 }

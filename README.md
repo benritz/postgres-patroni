@@ -10,12 +10,19 @@ Use `.env.example` as a starting point:
 cp .env.example .env
 ```
 
+Prefix-based secret values are supported for all sensitive vars:
+- ssm:/path: Fetch from AWS SSM Parameter Store (with decryption)
+- file:/path: Read from a file (e.g., Docker secret)
+- value:raw: Literal value
+- raw without prefix: Treated as a literal value
+
+
 ### Required
 
 - CLUSTER: Cluster name used by Patroni and pgBackRest.
-- CA_ROOT_CERT_FILE, CA_ROOT_KEY_FILE: Paths to the Root CA certificate/key inside containers. These are provided via Docker secrets; create files under `./secrets`:
-  - `./secrets/ca_root_cert`
-  - `./secrets/ca_root_key`
+- CA_ROOT_CERT, CA_ROOT_KEY: Root CA certificate/key contents provided via prefixes above. Typical via Docker secrets:
+  - `CA_ROOT_CERT=file:/run/secrets/ca_root_cert`
+  - `CA_ROOT_KEY=file:/run/secrets/ca_root_key`
   You can generate them with `gen-ca` sub-project (see `gen-ca/README.md`).
 
 ### Certificates
@@ -29,7 +36,7 @@ cp .env.example .env
 ### etcd
 
 - ETCD_HOSTS: Comma-separated etcd client endpoints (default matches `compose.yaml`).
-- ETCD_INITIAL_CLUSTER_TOKEN_FILE: Optional token provided via secret `./secrets/etcd_initial_cluster_token`.
+- ETCD_INITIAL_CLUSTER_TOKEN: Token via prefix value, e.g. `value:token`, `file:/run/secrets/etcd_initial_cluster_token`, or `ssm:/prod/etcd/cluster-token`.
 
 ### HAProxy
 
@@ -37,21 +44,22 @@ cp .env.example .env
 
 ### Postgres + PgBouncer Authentication
 
-- POSTGRES_SU_PWD_FILE: Secret for superuser password (`./secrets/postgres_su_password`).
-- POSTGRES_REPL_PWD_FILE: Secret for replication user (`./secrets/postgres_repl_password`).
-- POSTGRES_REWIND_PWD_FILE: Secret for rewind user (`./secrets/postgres_rewind_password`).
+- POSTGRES_SU_USER, POSTGRES_SU_PWD
+- POSTGRES_REPL_USER, POSTGRES_REPL_PWD
+- POSTGRES_REWIND_USER, POSTGRES_REWIND_PWD
+Use prefixes for passwords, e.g. `file:/run/secrets/postgres_su_password` or `ssm:/prod/db/postgres/su_password`.
 
 ### pgBackRest Backup
 
 - BACKUP_NAME: Defaults to `CLUSTER` if unset.
-- BACKUP_REGION_FILE, BACKUP_PATH_FILE: S3 region and bucket/path (secrets: `./secrets/backup_region`, `./secrets/backup_path`).
-- BACKUP_ACCESS_KEY_FILE, BACKUP_SECRET_KEY_FILE: Credentials secrets (optional when using an AWS EC2 instance profile).
+- BACKUP_REGION, BACKUP_PATH: S3 region and bucket/path via prefixes.
+- BACKUP_ACCESS_KEY, BACKUP_SECRET_KEY: Credentials via prefixes (optional with instance profile).
 
 ### pgBackRest Restore
 
 - RESTORE_NAME: Defaults to `CLUSTER` if unset.
-- RESTORE_REGION_FILE, RESTORE_PATH_FILE: S3 region and path for restore (`./secrets/restore_region`, `./secrets/restore_path`).
-- RESTORE_ACCESS_KEY_FILE, RESTORE_SECRET_KEY_FILE: Credentials secrets (optional when using an AWS EC2 instance profile).
+- RESTORE_REGION, RESTORE_PATH: S3 region and path for restore via prefixes.
+- RESTORE_ACCESS_KEY, RESTORE_SECRET_KEY: Credentials via prefixes (optional with instance profile).
 
 ## Running
 
