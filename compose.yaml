@@ -27,39 +27,51 @@ x-pg-vars: &pg-vars
   ETCD_HOSTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
   CLUSTER:
   POSTGRES_SU_USER: postgres
-  POSTGRES_SU_PWD: file:/run/secrets/postgres_su_password
+  # POSTGRES_SU_PWD: file:/run/secrets/postgres_su_password
+  POSTGRES_SU_PWD: ssm:/prod/db/postgres/password/su
   POSTGRES_REPL_USER: replicator
-  POSTGRES_REPL_PWD: file:/run/secrets/postgres_repl_password
+  # POSTGRES_REPL_PWD: file:/run/secrets/postgres_repl_password
+  # POSTGRES_REPL_PWD: file:/run/secrets/postgres_repl_password
+  POSTGRES_REPL_PWD: ssm:/prod/db/postgres/password/repl
   POSTGRES_REWIND_USER: rewinder
-  POSTGRES_REWIND_PWD: file:/run/secrets/postgres_rewind_password
+  # POSTGRES_REWIND_PWD: file:/run/secrets/postgres_rewind_password
+  POSTGRES_REWIND_PWD: ssm:/prod/db/postgres/password/rewind
   POSTGRES_SUBNET:
   BACKUP_NAME:
-  BACKUP_REGION: file:/run/secrets/backup_region
-  BACKUP_PATH: file:/run/secrets/backup_path
-  BACKUP_ACCESS_KEY: file:/run/secrets/backup_access_key
-  BACKUP_SECRET_KEY: file:/run/secrets/backup_secret_key
-  BACKUP_CRON_FULL: "0 2 * * 0"
-  BACKUP_CRON_INCR: "0 2 * * 1-6"
+  # BACKUP_REGION: file:/run/secrets/backup_region
+  BACKUP_REGION: ssm:/prod/db/postgres/physical/backup/region
+  # BACKUP_PATH: file:/run/secrets/backup_path
+  BACKUP_PATH: ssm:/prod/db/postgres/physical/backup/path
+  # BACKUP_ACCESS_KEY: file:/run/secrets/backup_access_key
+  BACKUP_ACCESS_KEY:
+  # BACKUP_SECRET_KEY: file:/run/secrets/backup_secret_key
+  BACKUP_SECRET_KEY:
+  BACKUP_CRON_FULL: ssm:/prod/db/postgres/physical/backup/cron/full
+  BACKUP_CRON_INCR: ssm:/prod/db/postgres/physical/backup/cron/incr
   RESTORE_NAME:
-  RESTORE_REGION: file:/run/secrets/restore_region
-  RESTORE_PATH: file:/run/secrets/restore_path
-  RESTORE_ACCESS_KEY: file:/run/secrets/restore_access_key
-  RESTORE_SECRET_KEY: file:/run/secrets/restore_secret_key
+  # RESTORE_REGION: file:/run/secrets/restore_region
+  RESTORE_REGION: ssm:/prod/db/postgres/physical/restore/region
+  # RESTORE_PATH: file:/run/secrets/restore_path
+  RESTORE_PATH: ssm:/prod/db/postgres/physical/restore/path
+  # RESTORE_ACCESS_KEY: file:/run/secrets/restore_access_key
+  RESTORE_ACCESS_KEY:
+  # RESTORE_SECRET_KEY: file:/run/secrets/restore_secret_key
+  RESTORE_SECRET_KEY:
 
 x-pg-secrets: &pg-secrets
   - ca_root_cert
   - ca_root_key
-  - postgres_su_password
-  - postgres_repl_password
-  - postgres_rewind_password
-  - backup_path
-  - backup_region
-  - backup_access_key
-  - backup_secret_key
-  - restore_path
-  - restore_region
-  - restore_access_key
-  - restore_secret_key
+  # - postgres_su_password
+  # - postgres_repl_password
+  # - postgres_rewind_password
+  # - backup_path
+  # - backup_region
+  # - backup_access_key
+  # - backup_secret_key
+  # - restore_path
+  # - restore_region
+  # - restore_access_key
+  # - restore_secret_key
 
 services:
   etcd_01:
@@ -122,6 +134,8 @@ services:
     volumes:
       - pg_01_data:/var/lib/postgresql
     environment: *pg-vars
+    env_file:
+      - .env
     secrets: *pg-secrets
     networks:
       cluster:
@@ -142,6 +156,8 @@ services:
     volumes:
       - pg_02_data:/var/lib/postgresql
     environment: *pg-vars
+    env_file:
+      - .env
     secrets: *pg-secrets
     networks:
       cluster:

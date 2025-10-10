@@ -86,5 +86,3 @@ envsubst </etc/pgbackrest/tmp.conf >/etc/pgbackrest/pgbackrest.conf
 rm /etc/pgbackrest/tmp.conf
 
 chown postgres:postgres /etc/pgbackrest/pgbackrest.conf
-
-cat /etc/pgbackrest/pgbackrest.conf
