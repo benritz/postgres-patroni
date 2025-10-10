@@ -32,9 +32,7 @@ function read_secret_var() {
     else
       resolved="$value"
     fi
-    if [[ -n "$resolved" ]]; then
-      export "$var"="$resolved"
-    fi
+    export "$var"="$resolved"
   fi
 }
 
