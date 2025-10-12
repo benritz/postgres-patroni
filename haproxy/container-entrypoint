@@ -23,7 +23,8 @@ function read_secret_var() {
     elif [[ "$value" == ssm:* ]]; then
       local param="${value#ssm:}"
       if command -v aws >/dev/null 2>&1; then
-        resolved="$(aws ssm get-parameter --name "$param" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || true)"
+        resolved="$(aws ssm get-parameter --name "$param" --with-decryption --query 'Parameter.Value' --output text 2>/tmp/read-secret-var || true)"
+        cat /tmp/read-secret-var || true
       else
         echo "Warning: aws CLI not found; cannot fetch SSM param for $var" >&2
       fi

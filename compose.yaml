@@ -1,6 +1,6 @@
 x-cert-vars: &cert-vars
-  CA_ROOT_CERT: file:/run/secrets/ca_root_cert
-  CA_ROOT_KEY: file:/run/secrets/ca_root_key
+  CA_ROOT_CERT:
+  CA_ROOT_KEY:
   CERT_C:
   CERT_ST:
   CERT_L:
@@ -17,10 +17,10 @@ x-etcd-vars: &etcd-vars
   ETCD_INITIAL_CLUSTER_STATE: new
   # ETCD_INITIAL_CLUSTER_TOKEN: file:/run/secrets/etcd_initial_cluster_token
 
-x-etcd-secrets: &etcd-secrets
-  - ca_root_cert
-  - ca_root_key
-  # - etcd_initial_cluster_token
+# x-etcd-secrets: &etcd-secrets
+# - ca_root_cert
+# - ca_root_key
+# - etcd_initial_cluster_token
 
 x-pg-vars: &pg-vars
   <<: *cert-vars
@@ -58,20 +58,20 @@ x-pg-vars: &pg-vars
   # RESTORE_SECRET_KEY: file:/run/secrets/restore_secret_key
   RESTORE_SECRET_KEY:
 
-x-pg-secrets: &pg-secrets
-  - ca_root_cert
-  - ca_root_key
-  # - postgres_su_password
-  # - postgres_repl_password
-  # - postgres_rewind_password
-  # - backup_path
-  # - backup_region
-  # - backup_access_key
-  # - backup_secret_key
-  # - restore_path
-  # - restore_region
-  # - restore_access_key
-  # - restore_secret_key
+# x-pg-secrets: &pg-secrets
+# - ca_root_cert
+# - ca_root_key
+# - postgres_su_password
+# - postgres_repl_password
+# - postgres_rewind_password
+# - backup_path
+# - backup_region
+# - backup_access_key
+# - backup_secret_key
+# - restore_path
+# - restore_region
+# - restore_access_key
+# - restore_secret_key
 
 services:
   etcd_01:
@@ -86,7 +86,9 @@ services:
     volumes:
       - etcd_01_data:/var/etcd-data
     environment: *etcd-vars
-    secrets: *etcd-secrets
+    env_file:
+      - .env
+    # secrets: *etcd-secrets
     networks:
       cluster:
 
@@ -102,7 +104,9 @@ services:
     volumes:
       - etcd_02_data:/var/etcd-data
     environment: *etcd-vars
-    secrets: *etcd-secrets
+    env_file:
+      - .env
+    # secrets: *etcd-secrets
     networks:
       cluster:
 
@@ -118,7 +122,9 @@ services:
     volumes:
       - etcd_03_data:/var/etcd-data
     environment: *etcd-vars
-    secrets: *etcd-secrets
+    env_file:
+      - .env
+    # secrets: *etcd-secrets
     networks:
       cluster:
 
@@ -136,7 +142,7 @@ services:
     environment: *pg-vars
     env_file:
       - .env
-    secrets: *pg-secrets
+    # secrets: *pg-secrets
     networks:
       cluster:
     depends_on:
@@ -158,7 +164,7 @@ services:
     environment: *pg-vars
     env_file:
       - .env
-    secrets: *pg-secrets
+    # secrets: *pg-secrets
     networks:
       cluster:
     depends_on:
@@ -178,9 +184,11 @@ services:
     environment:
       <<: *cert-vars
       TARGETS: pg_01:6432,pg_02:6432
-    secrets:
-      - ca_root_cert
-      - ca_root_key
+    env_file:
+      - .env
+    # secrets:
+    # - ca_root_cert
+    # - ca_root_key
     depends_on:
       - pg_01
       - pg_02
@@ -190,35 +198,35 @@ services:
       - 5432:5432
       - 5433:5433
 
-secrets:
-  ca_root_cert:
-    file: ./secrets/ca_root_cert
-  ca_root_key:
-    file: ./secrets/ca_root_key
-  etcd_initial_cluster_token:
-    file: ./secrets/etcd_initial_cluster_token
-  postgres_su_password:
-    file: ./secrets/postgres_su_password
-  postgres_repl_password:
-    file: ./secrets/postgres_repl_password
-  postgres_rewind_password:
-    file: ./secrets/postgres_rewind_password
-  backup_path:
-    file: ./secrets/backup_path
-  backup_region:
-    file: ./secrets/backup_region
-  backup_access_key:
-    file: ./secrets/backup_access_key
-  backup_secret_key:
-    file: ./secrets/backup_secret_key
-  restore_path:
-    file: ./secrets/restore_path
-  restore_region:
-    file: ./secrets/restore_region
-  restore_access_key:
-    file: ./secrets/restore_access_key
-  restore_secret_key:
-    file: ./secrets/restore_secret_key
+# secrets:
+# ca_root_cert:
+#   file: ./secrets/ca_root_cert
+# ca_root_key:
+#   file: ./secrets/ca_root_key
+# etcd_initial_cluster_token:
+#   file: ./secrets/etcd_initial_cluster_token
+# postgres_su_password:
+#   file: ./secrets/postgres_su_password
+# postgres_repl_password:
+#   file: ./secrets/postgres_repl_password
+# postgres_rewind_password:
+#   file: ./secrets/postgres_rewind_password
+# backup_path:
+#   file: ./secrets/backup_path
+# backup_region:
+#   file: ./secrets/backup_region
+# backup_access_key:
+#   file: ./secrets/backup_access_key
+# backup_secret_key:
+#   file: ./secrets/backup_secret_key
+# restore_path:
+#   file: ./secrets/restore_path
+# restore_region:
+#   file: ./secrets/restore_region
+# restore_access_key:
+#   file: ./secrets/restore_access_key
+# restore_secret_key:
+#   file: ./secrets/restore_secret_key
 
 volumes:
   etcd_01_data:
