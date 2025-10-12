@@ -67,5 +67,15 @@ read_secret_var ETCD_INITIAL_CLUSTER_TOKEN
 chown -R etcd:etcd /var/etcd-data/
 chown -R etcd:etcd /etc/etcd/
 
+if [[ "$ETCD_INITIAL_CLUSTER_STATE" == "existing" ]]; then
+  member_info=$(etcdctl --endpoints "$ETCD_ENDPOINTS" member list -w json | jq ".members[] | select(.name==\"$ETCD_NAME\")")
+  if [[ -z "$member_info" ]]; then
+    echo "Adding $ETCD_NAME as new member"
+    etcdctl --endpoints "$ETCD_ENDPOINTS" member add "$ETCD_NAME" --peer-urls="$ETCD_INITIAL_ADVERTISE_PEER_URLS"
+  else
+    echo "$ETCD_NAME is already a member"
+  fi
+fi
+
 # exec su-exec etcd etcd
 exec etcd
