@@ -27,7 +27,7 @@ echo "Backup stanza $RESTORE_NAME: $STANZA_STATE"
 if [ "$STANZA_STATE" == "ok" ]; then
   # restore stanza ok - restore db
   echo "Restoring from backup stanza $RESTORE_NAME"
-  pgbackrest --stanza="$RESTORE_NAME" --log-level-console=detail restore
+  pgbackrest --stanza="$RESTORE_NAME" --log-level-console=info --log-level-file=off restore
 else
   init_db
 fi
