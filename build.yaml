@@ -1,0 +1,16 @@
+services:
+  etcd:
+    build: ./etcd
+    image: postgres-patroni/etcd:latest
+
+  patroni:
+    build: ./patroni
+    image: postgres-patroni/patroni:latest
+
+  haproxy:
+    build: ./haproxy
+    image: postgres-patroni/haproxy:latest
+
+  gen-ca:
+    build: ./gen-ca
+    image: postgres-patroni/gen-ca:latest

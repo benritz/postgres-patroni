@@ -76,6 +76,7 @@ x-pg-vars: &pg-vars
 services:
   etcd_01:
     build: ./etcd
+    image: postgres-patroni/etcd:latest
     container_name: etcd_01
     hostname: etcd_01
     restart: unless-stopped
@@ -94,6 +95,7 @@ services:
 
   etcd_02:
     build: ./etcd
+    image: postgres-patroni/etcd:latest
     container_name: etcd_02
     hostname: etcd_02
     restart: unless-stopped
@@ -112,6 +114,7 @@ services:
 
   etcd_03:
     build: ./etcd
+    image: postgres-patroni/etcd:latest
     container_name: etcd_03
     hostname: etcd_03
     restart: unless-stopped
@@ -130,6 +133,7 @@ services:
 
   pg_01:
     build: ./patroni
+    image: postgres-patroni/patroni:latest
     container_name: pg_01
     hostname: pg_01
     restart: unless-stopped
@@ -152,6 +156,7 @@ services:
 
   pg_02:
     build: ./patroni
+    image: postgres-patroni/patroni:latest
     container_name: pg_02
     hostname: pg_02
     restart: unless-stopped
@@ -174,6 +179,7 @@ services:
 
   haproxy_01:
     build: ./haproxy
+    image: postgres-patroni/haproxy:latest
     container_name: haproxy_01
     hostname: haproxy_01
     restart: unless-stopped
