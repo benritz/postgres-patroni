@@ -1,6 +1,6 @@
-
+# REGISTRY must end in a forward slash
 variable "REGISTRY" {
-  default = "localhost"
+  default = ""
 }
 
 group "default" {
@@ -10,23 +10,23 @@ group "default" {
 target "etcd" {
   context = "./etcd"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/postgres-patroni/etcd:latest"]
+  tags = ["${REGISTRY}postgres-patroni/etcd:latest"]
 }
 
 target "patroni" {
   context = "./patroni"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/postgres-patroni/patroni:latest"]
+  tags = ["${REGISTRY}postgres-patroni/patroni:latest"]
 }
 
 target "haproxy" {
   context = "./haproxy"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/postgres-patroni/haproxy:latest"]
+  tags = ["${REGISTRY}postgres-patroni/haproxy:latest"]
 }
 
 target "gen-ca" {
   context = "./gen-ca"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/postgres-patroni/gen-ca:latest"]
+  tags = ["${REGISTRY}postgres-patroni/gen-ca:latest"]
 }
