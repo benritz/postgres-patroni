@@ -76,8 +76,8 @@ bootstrap:
         #        archive_timeout: 1800s
         # BACKUP_BEGIN
         archive_mode: "on"
-        archive_command: pgbackrest --stanza=${BACKUP_NAME} archive-push "%p"
-        restore_command: pgbackrest --stanza=${BACKUP_NAME} archive-get %f "%p"
+        archive_command: pgbackrest --stanza=${BACKUP_NAME} --log-level-console=warn --log-level-file=off archive-push "%p"
+        restore_command: pgbackrest --stanza=${BACKUP_NAME} --log-level-console=warn --log-level-file=off archive-get %f "%p"
         # BACKUP_END
         ssl: "on"
         ssl_cert_file: "/usr/local/etc/ssl/server.crt"
@@ -97,7 +97,7 @@ bootstrap:
     recovery_conf:
       recovery_target_timeline: latest
       recovery_target_action: promote
-      restore_command: pgbackrest --stanza=${RESTORE_NAME} archive-get %f "%p"
+      restore_command: pgbackrest --stanza=${RESTORE_NAME} --log-level-console=warn --log-level-file=off archive-get %f "%p"
     # RESTORE_END
 
   post_bootstrap: patroni-post-bootstrap
@@ -136,7 +136,7 @@ postgresql:
     - basebackup
   # BACKUP_BEGIN
   pgbackrest:
-    command: pgbackrest --stanza=${BACKUP_NAME} restore --type=none
+    command: pgbackrest --stanza=${BACKUP_NAME} --log-level-console=warn --log-level-file=off restore --type=none
     keep_data: true
     no_params: true
   # BACKUP_END

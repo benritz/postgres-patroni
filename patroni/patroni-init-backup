@@ -15,7 +15,7 @@ if [[ "$RESTORE_NAME" != "$BACKUP_NAME" ]] && [[ "$STANZA_STATE" == "ok" ]]; the
   # db has been restored from a different stanza, delete existing backup stanza and recreate
   echo "Deleting backup stanza $BACKUP_NAME to recreate from restore stanza $RESTORE_NAME"
   pgbackrest --stanza="$BACKUP_NAME" stop
-  pgbackrest --stanza="$BACKUP_NAME" stanza-delete --force
+  pgbackrest --stanza="$BACKUP_NAME" stanza-delete --log-level-file=off --force
   STANZA_STATE="recreate"
 fi
 
@@ -24,6 +24,6 @@ echo "Backup stanza $BACKUP_NAME: $STANZA_STATE"
 if [ "$STANZA_STATE" != "ok" ]; then
   # stanza missing - create stanza
   echo "Creating backup stanza $BACKUP_NAME"
-  pgbackrest --stanza="$BACKUP_NAME" --log-level-console=detail stanza-create
-  pgbackrest --stanza="$BACKUP_NAME" --log-level-console=detail --type=full backup
+  pgbackrest --stanza="$BACKUP_NAME" --log-level-console=info --log-level-file=off stanza-create
+  pgbackrest --stanza="$BACKUP_NAME" --log-level-console=info --log-level-file=off --type=full backup
 fi

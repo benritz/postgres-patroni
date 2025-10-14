@@ -82,17 +82,17 @@ export RESTORE_REGION="${RESTORE_REGION:=$BACKUP_REGION}"
 export RESTORE_ACCESS_KEY="${RESTORE_ACCESS_KEY:=${BACKUP_ACCESS_KEY:=}}"
 export RESTORE_SECRET_KEY="${RESTORE_SECRET_KEY:=${BACKUP_SECRET_KEY:=}}"
 
-write-pgbackrest-conf
+pgbackrest-write-conf
 
 # backup schedule
 if [[ -n "$BACKUP_CRON_FULL" || -n "$BACKUP_CRON_INCR" ]]; then
   mkdir -p /var/log
   {
     if [[ -n "$BACKUP_CRON_FULL" ]]; then
-      echo "$BACKUP_CRON_FULL /usr/local/bin/pgbackrest-backup full >> /var/log/pgbackrest-backup.log 2>&1"
+      echo "$BACKUP_CRON_FULL /usr/local/bin/pgbackrest-backup full >> /proc/1/fd/1 2>> /proc/1/fd/2"
     fi
     if [[ -n "$BACKUP_CRON_INCR" ]]; then
-      echo "$BACKUP_CRON_INCR /usr/local/bin/pgbackrest-backup incr >> /var/log/pgbackrest-backup.log 2>&1"
+      echo "$BACKUP_CRON_INCR /usr/local/bin/pgbackrest-backup incr >> /proc/1/fd/1 2>> /proc/1/fd/2"
     fi
   } | crontab -
   crond -b -l 8 || true
@@ -117,7 +117,7 @@ fi
 # pgbouncer
 mkdir -p /var/log/pgbouncer
 chown -R pgbouncer:postgres /var/log/pgbouncer
-pgbouncer -d -q /usr/local/etc/pgbouncer/pgbouncer.ini
+pgbouncer -d /usr/local/etc/pgbouncer/pgbouncer.ini
 pgbouncer-haproxy-agent
 
 exec su-exec postgres /venv/bin/patroni /venv/etc/patroni.yml
