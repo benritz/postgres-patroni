@@ -22,12 +22,20 @@ function read_secret_var() {
       fi
     elif [[ "$value" == ssm:* ]]; then
       local param="${value#ssm:}"
-      if command -v aws >/dev/null 2>&1; then
-        resolved="$(aws ssm get-parameter --name "$param" --with-decryption --query 'Parameter.Value' --output text 2>/tmp/read-secret-var || true)"
-        cat /tmp/read-secret-var || true
+      local err_file
+      err_file="$(mktemp -t read-secret-var.XXXXXX)"
+      local param_value=""
+      if ! param_value="$(aws ssm get-parameter --name "$param" --with-decryption --query 'Parameter.Value' --output text 2>"$err_file")"; then
+        if grep -q "ParameterNotFound" "$err_file"; then
+          resolved=""
+        else
+          echo "Error: failed to fetch SSM parameter '$param' for $var" >&2
+          cat "$err_file" >&2 || true
+        fi
       else
-        echo "Warning: aws CLI not found; cannot fetch SSM param for $var" >&2
+        resolved="$param_value"
       fi
+      rm -f "$err_file"
     elif [[ "$value" == value:* ]]; then
       resolved="${value#value:}"
     else
@@ -65,13 +73,26 @@ export ETCD_PEER_TRUSTED_CA_FILE=/usr/local/etc/ssl/ca-root.crt
 read_secret_var ETCD_INITIAL_CLUSTER_TOKEN
 
 chown -R etcd:etcd /var/etcd-data/
+chmod 0700 /var/etcd-data/
 chown -R etcd:etcd /etc/etcd/
 
+# try to add node to an existing cluster
 if [[ "$ETCD_INITIAL_CLUSTER_STATE" == "existing" ]]; then
-  member_info=$(etcdctl --endpoints "$ETCD_ENDPOINTS" member list -w json | jq ".members[] | select(.name==\"$ETCD_NAME\")")
+  echo "Adding to existing cluster"
+  member_info=$(etcdctl --endpoints "$ETCD_ENDPOINTS" member list -w json | jq ".members[] | select(.peerURLs[]? == \"$ETCD_INITIAL_ADVERTISE_PEER_URLS\")")
+  echo $member_info
   if [[ -z "$member_info" ]]; then
-    echo "Adding $ETCD_NAME as new member"
-    etcdctl --endpoints "$ETCD_ENDPOINTS" member add "$ETCD_NAME" --peer-urls="$ETCD_INITIAL_ADVERTISE_PEER_URLS"
+    echo "$ETCD_NAME is not a member, adding"
+    MEMBER_ADD_OUT=$(mktemp)
+    etcdctl --endpoints "$ETCD_ENDPOINTS" member add "$ETCD_NAME" --peer-urls="$ETCD_INITIAL_ADVERTISE_PEER_URLS" >"${MEMBER_ADD_OUT}" 2>&1 || true
+    export ETCD_INITIAL_CLUSTER=$(grep 'ETCD_INITIAL_CLUSTER=' "${MEMBER_ADD_OUT}" | awk -F'"' '{print $2}')
+    if [ -z "${ETCD_INITIAL_CLUSTER}" ]; then
+      echo "Failed to add member $ETCD_NAME"
+      echo "$MEMBER_ADD_OUT"
+      rm "$MEMBER_ADD_OUT"
+      exit 1
+    fi
+    rm "$MEMBER_ADD_OUT"
   else
     echo "$ETCD_NAME is already a member"
   fi
