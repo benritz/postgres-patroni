@@ -1,6 +1,9 @@
-# REGISTRY must end in a forward slash
 variable "REGISTRY" {
   default = "postgres-patroni"
+}
+
+variable "TAG" {
+  default = "latest"
 }
 
 group "default" {
@@ -10,23 +13,23 @@ group "default" {
 target "etcd" {
   context = "./etcd"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/etcd:latest"]
+  tags = ["${REGISTRY}/etcd:${TAG}"]
 }
 
 target "patroni" {
   context = "./patroni"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/patroni:latest"]
+  tags = ["${REGISTRY}/patroni:${TAG}"]
 }
 
 target "haproxy" {
   context = "./haproxy"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/haproxy:latest"]
+  tags = ["${REGISTRY}/haproxy:${TAG}"]
 }
 
 target "gen-ca" {
   context = "./gen-ca"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/gen-ca:latest"]
+  tags = ["${REGISTRY}/gen-ca:${TAG}"]
 }
