@@ -46,6 +46,11 @@ build_sans() {
   add_dns "$fqdn"
   add_dns "localhost"
 
+  local dns
+  for dns in "${CERT_SAN_DNS:=}"; do
+    add_dns "$dns"
+  done
+
   add_ip "127.0.0.1"
   add_ip "::1"
 
@@ -59,6 +64,9 @@ build_sans() {
     if [ "$ip" != "127.0.0.1" ] && [ "$ip" != "::1" ]; then
       add_ip "$ip"
     fi
+  done
+  for ip in "${CERT_SAN_IP:=}"; do
+    add_ip "$ip"
   done
 
   local i=1

@@ -10,6 +10,8 @@ x-cert-vars: &cert-vars
   CERT_EXPIRY:
   CERT_KEY_ALGO:
   CERT_KEY_SIZE:
+  CERT_SAN_IP:
+  CERT_SAN_DNS:
 
 x-etcd-vars: &etcd-vars
   <<: *cert-vars
