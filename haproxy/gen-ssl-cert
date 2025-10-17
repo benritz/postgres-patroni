@@ -57,16 +57,13 @@ build_sans() {
   # busybox does not support -I arg - hostname -I 2>/dev/null
   host_ipv4="$(ip -4 addr show 2>/dev/null | sed -n 's/.*inet \([0-9.]*\).*/\1/p' || true)"
   host_ipv6="$(ip -6 addr show 2>/dev/null | sed -n 's/.*inet6 \([^/]*\).*/\1/p' | grep -v '^fe80:' || true)"
-  host_ips="${host_ipv4} ${host_ipv6}"
+  host_ips="${host_ipv4} ${host_ipv6} ${CERT_SAN_IP:=}"
 
   local ip
   for ip in $host_ips; do
     if [ "$ip" != "127.0.0.1" ] && [ "$ip" != "::1" ]; then
       add_ip "$ip"
     fi
-  done
-  for ip in "${CERT_SAN_IP:=}"; do
-    add_ip "$ip"
   done
 
   local i=1
