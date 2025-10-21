@@ -53,7 +53,7 @@ mkdir -p /run/postgresql
 chown postgres:postgres /run/postgresql
 chmod 0750 /run/postgresql
 
-if [[ -z "$CLUSTER" ]]; then
+if [[ -z "${CLUSTER:-}" ]]; then
   echo "Missing CLUSTER var"
   exit 1
 fi
@@ -93,13 +93,13 @@ export RESTORE_SECRET_KEY="${RESTORE_SECRET_KEY:=${BACKUP_SECRET_KEY:=}}"
 pgbackrest-write-conf
 
 # backup schedule
-if [[ -n "$BACKUP_CRON_FULL" || -n "$BACKUP_CRON_INCR" ]]; then
+if [[ -n "${BACKUP_CRON_FULL:-}" || -n "${BACKUP_CRON_INCR:-}" ]]; then
   mkdir -p /var/log
   {
-    if [[ -n "$BACKUP_CRON_FULL" ]]; then
+    if [[ -n "${BACKUP_CRON_FULL:-}" ]]; then
       echo "$BACKUP_CRON_FULL /usr/local/bin/pgbackrest-backup full >> /proc/1/fd/1 2>> /proc/1/fd/2"
     fi
-    if [[ -n "$BACKUP_CRON_INCR" ]]; then
+    if [[ -n "${BACKUP_CRON_INCR:-}" ]]; then
       echo "$BACKUP_CRON_INCR /usr/local/bin/pgbackrest-backup incr >> /proc/1/fd/1 2>> /proc/1/fd/2"
     fi
   } | crontab -
@@ -109,6 +109,8 @@ fi
 # patroni config
 NI=$(ip -4 route show default | awk '{print $5}')
 export POSTGRES_SUBNET="${POSTGRES_SUBNET:-$(ip -4 route | awk -v i="$NI" '$0 ~ i && /scope link/ {print $1; exit}')}"
+
+export POSTGRES_ARCHIVE_TIMEOUT="${POSTGRES_ARCHIVE_TIMEOUT:-0}"
 
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 

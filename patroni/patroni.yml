@@ -73,9 +73,9 @@ bootstrap:
         #        max_locks_per_transaction: 64
         #        wal_log_hints: "on"
         #        track_commit_timestamp: "off"
-        #        archive_timeout: 1800s
         # BACKUP_BEGIN
         archive_mode: "on"
+        archive_timeout: ${POSTGRES_ARCHIVE_TIMEOUT}
         archive_command: pgbackrest --stanza=${BACKUP_NAME} --log-level-console=warn --log-level-file=off archive-push "%p"
         restore_command: pgbackrest --stanza=${BACKUP_NAME} --log-level-console=warn --log-level-file=off archive-get %f "%p"
         # BACKUP_END
