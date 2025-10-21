@@ -39,7 +39,7 @@ x-pg-vars: &pg-vars
   # POSTGRES_REWIND_PWD: file:/run/secrets/postgres_rewind_password
   POSTGRES_REWIND_PWD: ssm:/prod/db/postgres/password/rewind
   POSTGRES_SUBNET:
-  POSTGRES_ARCHIVE_TIMEOUT: 30
+  POSTGRES_ARCHIVE_TIMEOUT: 300
   BACKUP_NAME:
   # BACKUP_REGION: file:/run/secrets/backup_region
   BACKUP_REGION: ssm:/prod/db/postgres/physical/backup/region
