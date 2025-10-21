@@ -19,7 +19,8 @@ FROM alpine:3.22
 
 RUN apk add --no-cache \
     bash \
-    postgresql \
+    postgresql17 \
+    postgresql17-contrib \
     pgbackrest \
     pgbouncer \
     su-exec \
