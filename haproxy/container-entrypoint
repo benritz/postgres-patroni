@@ -2,48 +2,7 @@
 
 set -euo pipefail
 
-function read_secret_var() {
-  local var="$1"
-  local read_mode="${2:-line}"
-  local value="${!var:-}"
-  local resolved=""
-
-  if [[ -n "$value" ]]; then
-    if [[ "$value" == file:* ]]; then
-      local path="${value#file:}"
-      if [[ "$read_mode" == "all" ]]; then
-        if [[ -r "$path" ]]; then
-          resolved="$(cat -- "$path" 2>/dev/null || true)"
-        fi
-      else
-        if [[ -r "$path" ]]; then
-          IFS= read -r resolved <"$path" || true
-        fi
-      fi
-    elif [[ "$value" == ssm:* ]]; then
-      local param="${value#ssm:}"
-      local err_file
-      err_file="$(mktemp -t read-secret-var.XXXXXX)"
-      local param_value=""
-      if ! param_value="$(aws ssm get-parameter --name "$param" --with-decryption --query 'Parameter.Value' --output text 2>"$err_file")"; then
-        if grep -q "ParameterNotFound" "$err_file"; then
-          resolved=""
-        else
-          echo "Error: failed to fetch SSM parameter '$param' for $var" >&2
-          cat "$err_file" >&2 || true
-        fi
-      else
-        resolved="$param_value"
-      fi
-      rm -f "$err_file"
-    elif [[ "$value" == value:* ]]; then
-      resolved="${value#value:}"
-    else
-      resolved="$value"
-    fi
-    export "$var"="$resolved"
-  fi
-}
+source ./read-secret-var
 
 read_secret_var CA_ROOT_CERT all
 read_secret_var CA_ROOT_KEY all

@@ -2,6 +2,20 @@
 
 set -euo pipefail
 
+source ./read-secret-var
+
+read_secret_var POSTGRES_SU_PWD
+export PGPASSWORD="$POSTGRES_SU_PWD"
+
+read_secret_var BACKUP_PATH
+read_secret_var BACKUP_REGION
+read_secret_var BACKUP_ACCESS_KEY
+read_secret_var BACKUP_SECRET_KEY
+read_secret_var RESTORE_PATH
+read_secret_var RESTORE_REGION
+read_secret_var RESTORE_ACCESS_KEY
+read_secret_var RESTORE_SECRET_KEY
+
 if [[ -z "${BACKUP_PATH:-}" ]]; then
   echo "Skipping backup: BACKUP_PATH not set"
   exit 0
