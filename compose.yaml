@@ -97,7 +97,6 @@ services:
       cluster:
 
   etcd_02:
-    build: ./etcd
     image: postgres-patroni/etcd:latest
     container_name: etcd_02
     hostname: etcd_02
@@ -116,7 +115,6 @@ services:
       cluster:
 
   etcd_03:
-    build: ./etcd
     image: postgres-patroni/etcd:latest
     container_name: etcd_03
     hostname: etcd_03
@@ -158,7 +156,6 @@ services:
       - etcd_03
 
   pg_02:
-    build: ./patroni
     image: postgres-patroni/patroni:latest
     container_name: pg_02
     hostname: pg_02
