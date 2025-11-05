@@ -85,7 +85,7 @@ fi
 # pgbouncer
 mkdir -p /var/log/pgbouncer
 chown -R pgbouncer:postgres /var/log/pgbouncer
-pgbouncer -d /usr/local/etc/pgbouncer/pgbouncer.ini
+pgbouncer /usr/local/etc/pgbouncer/pgbouncer.ini >/proc/1/fd/1 2>/proc/1/fd/2 &
 pgbouncer-haproxy-agent
 
 exec su-exec postgres /venv/bin/patroni /venv/etc/patroni.yml
