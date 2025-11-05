@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-source ./read-secret-var
+source /usr/local/bin/read-secret-var
 
 read_secret_var POSTGRES_SU_PWD
 export PGPASSWORD="$POSTGRES_SU_PWD"

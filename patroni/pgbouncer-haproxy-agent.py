@@ -11,6 +11,11 @@ AGENT_PORT = int(os.getenv("AGENT_PORT", "8009"))
 TIMEOUT = float(os.getenv("AGENT_TIMEOUT", "1.0"))
 BACKLOG = 32
 
+print(
+    f"haproxy-agent start host={PGBOUNCER_HOST} port={PGBOUNCER_PORT} listen={AGENT_PORT} timeout={TIMEOUT}",
+    flush=True,
+)
+
 
 def pgbouncer_ok():
     try:

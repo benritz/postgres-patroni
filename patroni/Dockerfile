@@ -30,6 +30,7 @@ RUN apk add --no-cache \
     jq \
     shadow \
     dcron \
+    tini \
     aws-cli && \
   apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
   
@@ -54,6 +55,6 @@ RUN mkdir /venv/etc && \
   mkdir -p /tmp/pgbackrest && \
   chown -R postgres /tmp/pgbackrest
 
-ENTRYPOINT ["container-entrypoint"]
+ENTRYPOINT ["tini","-g","--","container-entrypoint"]
 
 EXPOSE 5432 6432 8008 8009
