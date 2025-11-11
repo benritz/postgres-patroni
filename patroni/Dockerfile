@@ -19,8 +19,6 @@ FROM alpine:3.22
 
 RUN apk add --no-cache \
     bash \
-    postgresql17 \
-    postgresql17-contrib \
     pgbackrest \
     pgbouncer \
     su-exec \
@@ -32,7 +30,14 @@ RUN apk add --no-cache \
     dcron \
     tini \
     aws-cli && \
-  apk add --no-cache cfssl --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
+  apk add --no-cache \
+    postgresql18 \
+    postgresql18-contrib \
+    libpq-dev \
+    --repository https://dl-cdn.alpinelinux.org/alpine/edge/main && \
+  apk add --no-cache \ 
+    cfssl \
+    --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
   
 WORKDIR /usr/local/bin/
 COPY . .

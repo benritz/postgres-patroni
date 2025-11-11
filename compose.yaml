@@ -19,9 +19,9 @@ x-etcd-vars: &etcd-vars
   ETCD_INITIAL_CLUSTER_STATE: new
   # ETCD_INITIAL_CLUSTER_TOKEN: file:/run/secrets/etcd_initial_cluster_token
 
-# x-etcd-secrets: &etcd-secrets
-# - ca_root_cert
-# - ca_root_key
+x-etcd-secrets: &etcd-secrets
+  - ca_root_cert
+  - ca_root_key
 # - etcd_initial_cluster_token
 
 x-pg-vars: &pg-vars
@@ -30,40 +30,40 @@ x-pg-vars: &pg-vars
   CLUSTER:
   POSTGRES_SU_USER: postgres
   # POSTGRES_SU_PWD: file:/run/secrets/postgres_su_password
-  POSTGRES_SU_PWD: ssm:/prod/db/postgres/password/su
+  # POSTGRES_SU_PWD: ssm:/prod/db/postgres/password/su
   POSTGRES_REPL_USER: replicator
   # POSTGRES_REPL_PWD: file:/run/secrets/postgres_repl_password
   # POSTGRES_REPL_PWD: file:/run/secrets/postgres_repl_password
-  POSTGRES_REPL_PWD: ssm:/prod/db/postgres/password/repl
+  # POSTGRES_REPL_PWD: ssm:/prod/db/postgres/password/repl
   POSTGRES_REWIND_USER: rewinder
   # POSTGRES_REWIND_PWD: file:/run/secrets/postgres_rewind_password
-  POSTGRES_REWIND_PWD: ssm:/prod/db/postgres/password/rewind
+  # POSTGRES_REWIND_PWD: ssm:/prod/db/postgres/password/rewind
   POSTGRES_SUBNET:
   POSTGRES_ARCHIVE_TIMEOUT: 300
   BACKUP_NAME:
   # BACKUP_REGION: file:/run/secrets/backup_region
-  BACKUP_REGION: ssm:/prod/db/postgres/physical/backup/region
+  # BACKUP_REGION: ssm:/prod/db/postgres/physical/backup/region
   # BACKUP_PATH: file:/run/secrets/backup_path
-  BACKUP_PATH: ssm:/prod/db/postgres/physical/backup/path
+  # BACKUP_PATH: ssm:/prod/db/postgres/physical/backup/path
   # BACKUP_ACCESS_KEY: file:/run/secrets/backup_access_key
-  BACKUP_ACCESS_KEY:
+  # BACKUP_ACCESS_KEY:
   # BACKUP_SECRET_KEY: file:/run/secrets/backup_secret_key
-  BACKUP_SECRET_KEY:
-  BACKUP_CRON_FULL: ssm:/prod/db/postgres/physical/backup/cron/full
-  BACKUP_CRON_INCR: ssm:/prod/db/postgres/physical/backup/cron/incr
+  # BACKUP_SECRET_KEY:
+  # BACKUP_CRON_FULL: ssm:/prod/db/postgres/physical/backup/cron/full
+  # BACKUP_CRON_INCR: ssm:/prod/db/postgres/physical/backup/cron/incr
   RESTORE_NAME:
   # RESTORE_REGION: file:/run/secrets/restore_region
-  RESTORE_REGION: ssm:/prod/db/postgres/physical/restore/region
+  # RESTORE_REGION: ssm:/prod/db/postgres/physical/restore/region
   # RESTORE_PATH: file:/run/secrets/restore_path
-  RESTORE_PATH: ssm:/prod/db/postgres/physical/restore/path
+  # RESTORE_PATH: ssm:/prod/db/postgres/physical/restore/path
   # RESTORE_ACCESS_KEY: file:/run/secrets/restore_access_key
-  RESTORE_ACCESS_KEY:
+  # RESTORE_ACCESS_KEY:
   # RESTORE_SECRET_KEY: file:/run/secrets/restore_secret_key
-  RESTORE_SECRET_KEY:
+  # RESTORE_SECRET_KEY:
 
-# x-pg-secrets: &pg-secrets
-# - ca_root_cert
-# - ca_root_key
+x-pg-secrets: &pg-secrets
+  - ca_root_cert
+  - ca_root_key
 # - postgres_su_password
 # - postgres_repl_password
 # - postgres_rewind_password
@@ -92,7 +92,7 @@ services:
     environment: *etcd-vars
     env_file:
       - .env
-    # secrets: *etcd-secrets
+    secrets: *etcd-secrets
     networks:
       cluster:
 
@@ -110,7 +110,7 @@ services:
     environment: *etcd-vars
     env_file:
       - .env
-    # secrets: *etcd-secrets
+    secrets: *etcd-secrets
     networks:
       cluster:
 
@@ -128,7 +128,7 @@ services:
     environment: *etcd-vars
     env_file:
       - .env
-    # secrets: *etcd-secrets
+    secrets: *etcd-secrets
     networks:
       cluster:
 
@@ -147,7 +147,7 @@ services:
     environment: *pg-vars
     env_file:
       - .env
-    # secrets: *pg-secrets
+    secrets: *pg-secrets
     networks:
       cluster:
     depends_on:
@@ -169,7 +169,7 @@ services:
     environment: *pg-vars
     env_file:
       - .env
-    # secrets: *pg-secrets
+    secrets: *pg-secrets
     networks:
       cluster:
     depends_on:
@@ -192,9 +192,9 @@ services:
       TARGETS: pg_01:6432,pg_02:6432
     env_file:
       - .env
-    # secrets:
-    # - ca_root_cert
-    # - ca_root_key
+    secrets:
+      - ca_root_cert
+      - ca_root_key
     depends_on:
       - pg_01
       - pg_02
@@ -204,11 +204,11 @@ services:
       - 5432:5432
       - 5433:5433
 
-# secrets:
-# ca_root_cert:
-#   file: ./secrets/ca_root_cert
-# ca_root_key:
-#   file: ./secrets/ca_root_key
+secrets:
+  ca_root_cert:
+    file: ./secrets/ca_root_cert
+  ca_root_key:
+    file: ./secrets/ca_root_key
 # etcd_initial_cluster_token:
 #   file: ./secrets/etcd_initial_cluster_token
 # postgres_su_password:
