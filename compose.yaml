@@ -155,27 +155,27 @@ services:
       - etcd_02
       - etcd_03
 
-  # pg_02:
-  #   image: postgres-patroni/patroni:latest
-  #   container_name: pg_02
-  #   hostname: pg_02
-  #   restart: unless-stopped
-  #   logging:
-  #     options:
-  #       max-size: "1m"
-  #       max-file: "5"
-  #   volumes:
-  #     - pg_02_data:/var/lib/postgresql
-  #   environment: *pg-vars
-  #   env_file:
-  #     - .env
-  #   secrets: *pg-secrets
-  #   networks:
-  #     cluster:
-  #   depends_on:
-  #     - etcd_01
-  #     - etcd_02
-  #     - etcd_03
+  pg_02:
+    image: postgres-patroni/patroni:latest
+    container_name: pg_02
+    hostname: pg_02
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "5"
+    volumes:
+      - pg_02_data:/var/lib/postgresql
+    environment: *pg-vars
+    env_file:
+      - .env
+    secrets: *pg-secrets
+    networks:
+      cluster:
+    depends_on:
+      - etcd_01
+      - etcd_02
+      - etcd_03
 
   haproxy_01:
     build: ./haproxy

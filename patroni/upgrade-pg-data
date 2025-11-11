@@ -3,6 +3,9 @@
 upgrade_pg_data() {
   local DATADIR="/var/lib/postgresql/data"
 
+  # upgrade backup (it's using the old database system identifier)
+  su-exec postgres pgbackrest --stanza=${BACKUP_NAME} --no-online stanza-upgrade
+
   if ! command -v pg_upgrade >/dev/null 2>&1; then
     echo "[upgrade] pg_upgrade not found"
     echo "[upgrade] Failed"
@@ -80,8 +83,11 @@ upgrade_pg_data() {
   chmod 0750 "$DATADIR"
   echo "[upgrade] Old data directory moved to ${OLD_DATADIR}"
 
-  # Remove patroni cluster (it's using the old database system identifier)
+  # remove patroni cluster (it's using the old database system identifier)
   echo -e "${CLUSTER}\nYes I am aware" | patronictl remove "$CLUSTER"
+
+  # upgrade backup (it's using the old database system identifier)
+  su-exec postgres pgbackrest --stanza=${BACKUP_NAME} --no-online stanza-upgrade
 
   # update to new system identifier
   PG_SYSID=$(pg_controldata -D /var/lib/postgresql/data | fgrep 'Database system identifier' | awk '{print $NF}')
