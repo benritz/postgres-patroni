@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+
+upgrade_pg_data() {
+  local DATADIR="/var/lib/postgresql/data"
+
+  if ! command -v pg_upgrade >/dev/null 2>&1; then
+    echo "[upgrade] pg_upgrade not found"
+    echo "[upgrade] Failed"
+    return 1
+  fi
+
+  if [[ ! -s "$DATADIR/PG_VERSION" ]]; then
+    echo "[upgrade] Cluster missing – nothing to do"
+    return 0
+  fi
+
+  local OLD_VER NEW_VER
+  OLD_VER=$(tr -d '\n' <"$DATADIR/PG_VERSION")
+  NEW_VER=$(postgres -V | awk '{print $NF}' | cut -d. -f1)
+
+  if [[ "$OLD_VER" == "$NEW_VER" ]]; then
+    echo "[upgrade] Cluster at major version $NEW_VER – nothing to do"
+    return 0
+  fi
+
+  apk add --no-cache "postgresql${OLD_VER}" "postgresql${OLD_VER}-contrib"
+
+  local OLD_BINDIR="/usr/libexec/postgresql${OLD_VER}"
+  local NEW_BINDIR="/usr/libexec/postgresql${NEW_VER}"
+
+  if [[ ! -x "$NEW_BINDIR/postgres" ]]; then
+    echo "[upgrade] Invalid new bin path $NEW_BINDIR"
+    echo "[upgrade] Failed"
+    return 1
+  fi
+  if [[ ! -x "$OLD_BINDIR/postgres" ]]; then
+    echo "[upgrade] Invalid old bin path $OLD_BINDIR"
+    echo "[upgrade] Failed"
+    return 1
+  fi
+
+  local NEW_DATADIR="${DATADIR}.new"
+  rm -rf "$NEW_DATADIR"
+
+  echo "[upgrade] Initializing new cluster at $NEW_DATADIR (target $NEW_VER)"
+
+  su-exec postgres initdb -D "$NEW_DATADIR" --encoding UTF8 --data-checksums || {
+    echo "[upgrade] initdb failed"
+    echo "[upgrade] Failed"
+    return 1
+  }
+
+  pushd "$DATADIR" >/dev/null
+
+  export PGPASSWORD="$POSTGRES_SU_PWD"
+
+  echo "[upgrade] pg_upgrade check ($OLD_VER → $NEW_VER)"
+  su-exec postgres pg_upgrade -d "$DATADIR" -D "$NEW_DATADIR" -b "$OLD_BINDIR" -B "$NEW_BINDIR" --link --check || {
+    echo "[upgrade] pg_upgrade --check failed"
+    echo "[upgrade] Failed"
+    return 1
+  }
+
+  echo "[upgrade] pg_upgrade ($OLD_VER → $NEW_VER)"
+  su-exec postgres pg_upgrade -d "$DATADIR" -D "$NEW_DATADIR" -b "$OLD_BINDIR" -B "$NEW_BINDIR" --link || {
+    echo "[upgrade] pg_upgrade failed"
+    echo "[upgrade] Failed"
+    return 1
+  }
+
+  popd >/dev/null
+
+  # switch data directories
+  local TS
+  TS=$(date +%s)
+  OLD_DATADIR="${DATADIR}.old-${OLD_VER}-${TS}"
+  mv "$DATADIR" "$OLD_DATADIR"
+  mv "$NEW_DATADIR" "$DATADIR"
+  chown -R postgres:postgres "$DATADIR"
+  chmod 0750 "$DATADIR"
+  echo "[upgrade] Old data directory moved to ${OLD_DATADIR}"
+
+  # Remove patroni cluster (it's using the old database system identifier)
+  echo -e "${CLUSTER}\nYes I am aware" | patronictl remove "$CLUSTER"
+
+  # update to new system identifier
+  PG_SYSID=$(pg_controldata -D /var/lib/postgresql/data | fgrep 'Database system identifier' | awk '{print $NF}')
+  echo "[upgrade] New database system identifier: $PG_SYSID"
+
+  echo "[upgrade] Complete: $OLD_VER → $NEW_VER"
+
+  return 0
+}

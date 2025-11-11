@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+UPGRADE=0
+for arg in "$@"; do
+  [[ "$arg" == "--upgrade" ]] && UPGRADE=1 && break
+done
+
 source ./read-secret-var
 
 mkdir -p /var/lib/postgresql/data
@@ -51,6 +56,25 @@ export RESTORE_SECRET_KEY="${RESTORE_SECRET_KEY:=${BACKUP_SECRET_KEY:=}}"
 
 pgbackrest-write-conf
 
+# patroni config
+NI=$(ip -4 route show default | awk '{print $5}')
+export POSTGRES_SUBNET="${POSTGRES_SUBNET:-$(ip -4 route | awk -v i="$NI" '$0 ~ i && /scope link/ {print $1; exit}')}"
+
+export POSTGRES_ARCHIVE_TIMEOUT="${POSTGRES_ARCHIVE_TIMEOUT:-0}"
+
+envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
+
+# upgrade pg data
+if [[ "$UPGRADE" == "1" ]]; then
+  echo "[upgrade]"
+  source ./upgrade-pg-data
+  if upgrade_pg_data; then
+    exit 0
+  else
+    exit 1
+  fi
+fi
+
 # backup schedule
 if [[ -n "${BACKUP_CRON_FULL:-}" || -n "${BACKUP_CRON_INCR:-}" ]]; then
   {
@@ -63,14 +87,6 @@ if [[ -n "${BACKUP_CRON_FULL:-}" || -n "${BACKUP_CRON_INCR:-}" ]]; then
   } | crontab -
   crond -b -l 8 || true
 fi
-
-# patroni config
-NI=$(ip -4 route show default | awk '{print $5}')
-export POSTGRES_SUBNET="${POSTGRES_SUBNET:-$(ip -4 route | awk -v i="$NI" '$0 ~ i && /scope link/ {print $1; exit}')}"
-
-export POSTGRES_ARCHIVE_TIMEOUT="${POSTGRES_ARCHIVE_TIMEOUT:-0}"
-
-envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
 # disable backup config if required
 if [[ -z "${BACKUP_PATH:-}" ]]; then
@@ -85,6 +101,7 @@ fi
 # pgbouncer
 mkdir -p /var/log/pgbouncer
 chown -R pgbouncer:postgres /var/log/pgbouncer
+rm -f /var/run/pgbouncer/.pidfile
 pgbouncer /usr/local/etc/pgbouncer/pgbouncer.ini >/proc/1/fd/1 2>/proc/1/fd/2 &
 pgbouncer-haproxy-agent
 
