@@ -109,6 +109,25 @@ upgrade_pg_data() {
   PG_SYSID=$(pg_controldata -D /var/lib/postgresql/data | fgrep 'Database system identifier' | awk '{print $NF}')
   echo "[upgrade] New database system identifier: $PG_SYSID"
 
+  # Vacuum database
+  echo "[upgrade] Start postgres for vacuum"
+  su-exec postgres "$NEW_BINDIR/pg_ctl" -D "$DATADIR" -w -t 120 -o "-c listen_addresses='' -c unix_socket_directories='/run/postgresql'" start || {
+    echo "[upgrade] Failed to start postgres"
+    echo "[upgrade] Failed"
+    return 1
+  }
+
+  echo "[upgrade] Vacuum database"
+  su-exec postgres vacuumdb -h /run/postgresql -U postgres --all --analyze-in-stages --missing-stats-only
+  su-exec postgres vacuumdb -h /run/postgresql -U postgres --all --analyze-only
+
+  echo "[upgrade] Stop postgres"
+  su-exec postgres "$NEW_BINDIR/pg_ctl" -D "$DATADIR" -m fast -w stop || {
+    echo "[upgrade] Failed to stop postgres"
+    echo "[upgrade] Failed"
+    return 1
+  }
+
   echo "[upgrade] Complete: $OLD_VER → $NEW_VER"
 
   return 0
