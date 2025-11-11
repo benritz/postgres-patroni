@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 upgrade_pg_data() {
+  echo "[upgrade] Started"
+
   local DATADIR="/var/lib/postgresql/data"
 
   # upgrade backup (it's using the old database system identifier)

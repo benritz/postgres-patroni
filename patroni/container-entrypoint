@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-UPGRADE=0
+upgrade_pg_data=0
 for arg in "$@"; do
-  [[ "$arg" == "--upgrade" ]] && UPGRADE=1 && break
+  [[ "$arg" == "--upgrade-pg-data" ]] && upgrade_pg_data=1 && break
 done
 
 source ./read-secret-var
@@ -65,8 +65,7 @@ export POSTGRES_ARCHIVE_TIMEOUT="${POSTGRES_ARCHIVE_TIMEOUT:-0}"
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
 # upgrade pg data
-if [[ "$UPGRADE" == "1" ]]; then
-  echo "[upgrade]"
+if [[ "$upgrade_pg_data" == "1" ]]; then
   source ./upgrade-pg-data
   if upgrade_pg_data; then
     exit 0

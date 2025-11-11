@@ -42,7 +42,7 @@ services:
     build: ./patroni
     image: postgres-patroni/patroni:latest
     container_name: pg_01
-    command: ["--upgrade"]
+    command: ["--upgrade-pg-data"]
     hostname: pg_01
     restart: no 
     logging:
