@@ -32,7 +32,11 @@ upgrade_pg_data() {
     return 0
   fi
 
-  apk add --no-cache "postgresql${OLD_VER}" "postgresql${OLD_VER}-contrib"
+  apk add --no-cache "postgresql${OLD_VER}" "postgresql${OLD_VER}-contrib" || {
+    echo "[upgrade] postgresql${OLD_VER} cannot be installed"
+    echo "[upgrade] Failed"
+    return 1
+  }
 
   local OLD_BINDIR="/usr/libexec/postgresql${OLD_VER}"
   local NEW_BINDIR="/usr/libexec/postgresql${NEW_VER}"
