@@ -6,7 +6,11 @@ upgrade_pg_data() {
   local DATADIR="/var/lib/postgresql/data"
 
   # upgrade backup (it's using the old database system identifier)
-  su-exec postgres pgbackrest --stanza=${BACKUP_NAME} --no-online stanza-upgrade
+  su-exec postgres pgbackrest --stanza=${BACKUP_NAME} --no-online stanza-upgrade || {
+    echo "[upgrade] pgbackrest stanza-upgrade failed"
+    echo "[upgrade] Failed"
+    return 1
+  }
 
   if ! command -v pg_upgrade >/dev/null 2>&1; then
     echo "[upgrade] pg_upgrade not found"
@@ -86,10 +90,20 @@ upgrade_pg_data() {
   echo "[upgrade] Old data directory moved to ${OLD_DATADIR}"
 
   # remove patroni cluster (it's using the old database system identifier)
-  echo -e "${CLUSTER}\nYes I am aware" | patronictl remove "$CLUSTER"
+  echo -e "${CLUSTER}\nYes I am aware" | patronictl remove "$CLUSTER" || {
+    echo "[upgrade] Patroni cluster remove failed"
+    echo "[upgrade] Failed"
+    return 1
+  }
+  echo "[upgrade] Patroni cluster removed due to database system identifier change, it will recreated on startup"
 
-  # upgrade backup (it's using the old database system identifier)
-  su-exec postgres pgbackrest --stanza=${BACKUP_NAME} --no-online stanza-upgrade
+  # backup database (it's using the old database system identifier)
+  su-exec postgres pgbackrest --stanza=${BACKUP_NAME} --no-online --log-level-console=info --log-level-file=off stanza-upgrade || {
+    echo "[upgrade] pgBackRest stanza-upgrade failed"
+    echo "[upgrade] Failed"
+    return 1
+  }
+  echo "[upgrade] Full backup complete"
 
   # update to new system identifier
   PG_SYSID=$(pg_controldata -D /var/lib/postgresql/data | fgrep 'Database system identifier' | awk '{print $NF}')
