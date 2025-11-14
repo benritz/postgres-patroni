@@ -1,5 +1,5 @@
 variable "REGISTRY" {
-  default = "postgres-patroni"
+  default = "postgres-patroni/"
 }
 
 variable "TAG" {
@@ -13,23 +13,23 @@ group "default" {
 target "etcd" {
   context = "./etcd"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/etcd:${TAG}"]
+  tags = ["${REGISTRY}etcd:${TAG}"]
 }
 
 target "patroni" {
   context = "./patroni"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/patroni:${TAG}"]
+  tags = ["${REGISTRY}patroni:${TAG}"]
 }
 
 target "haproxy" {
   context = "./haproxy"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/haproxy:${TAG}"]
+  tags = ["${REGISTRY}haproxy:${TAG}"]
 }
 
 target "gen-ca" {
   context = "./gen-ca"
   platforms = ["linux/amd64", "linux/arm64"]
-  tags = ["${REGISTRY}/gen-ca:${TAG}"]
+  tags = ["${REGISTRY}gen-ca:${TAG}"]
 }
