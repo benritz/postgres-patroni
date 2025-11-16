@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Dump every database on the leader and upload to S3
+#
+# Env vars (can be plain, file:, ssm:, or value: via read-secret-var):
+# - DUMP_PATH          e.g. s3://my-bucket/path (required)
+# - DUMP_REGION        e.g. us-east-1 (optional)
+# - DUMP_ACCESS_KEY    AWS access key (optional)
+# - DUMP_SECRET_KEY    AWS secret key (optional)
+# - If no keys provided, instance profile/IMDS (or IRSA) is used
+# - DUMP_COMPRESSION   pg_dump custom format compression level (0-9, default 6)
+#
+# Notes:
+# - Runs only on Patroni leader to avoid duplicate dumps
+# - Uses pg_dump custom format (-Fc) suitable for pg_restore
+
+source /usr/local/bin/read-secret-var
+
+read_secret_var POSTGRES_SU_PWD || true
+export PGPASSWORD="$POSTGRES_SU_PWD"
+
+read_secret_var DUMP_PATH || true
+read_secret_var DUMP_REGION || true
+read_secret_var DUMP_ACCESS_KEY || true
+read_secret_var DUMP_SECRET_KEY || true
+
+DUMP_PATH="${DUMP_PATH:-}"
+DUMP_REGION="${DUMP_REGION:-}"
+DUMP_ACCESS_KEY="${DUMP_ACCESS_KEY:-${AWS_ACCESS_KEY_ID:-}}"
+DUMP_SECRET_KEY="${DUMP_SECRET_KEY:-${AWS_SECRET_ACCESS_KEY:-}}"
+
+if [[ -z "${DUMP_PATH:-}" ]]; then
+  echo "Skipping dumps: DUMP_PATH not set" >&2
+  exit 0
+fi
+
+if [[ -n "${DUMP_REGION:-}" ]]; then
+  export AWS_DEFAULT_REGION="$DUMP_REGION"
+fi
+if [[ -n "${DUMP_ACCESS_KEY:-}" ]]; then
+  export AWS_ACCESS_KEY_ID="$DUMP_ACCESS_KEY"
+fi
+if [[ -n "${DUMP_SECRET_KEY:-}" ]]; then
+  export AWS_SECRET_ACCESS_KEY="$DUMP_SECRET_KEY"
+fi
+
+LEADER=$(patronictl list --format=json | jq -r '.[] | select(.Role=="Leader") | .Member')
+if [[ "$LEADER" != "$HOSTNAME" ]]; then
+  echo "Not the leader — skipping dumps"
+  exit 0
+fi
+
+TS=$(date -u +%Y%m%dT%H%M%SZ)
+DEST_PREFIX="${DUMP_PATH%/}"
+
+COMPRESS="${DUMP_COMPRESSION:-6}"
+
+# List databases exclude templates
+DB_NAMES=$(su-exec postgres psql -h /run/postgresql -U postgres -Atc \
+  "select datname from pg_database where datistemplate = false and datallowconn order by 1")
+
+if [[ -z "$DB_NAMES" ]]; then
+  echo "No databases to dump"
+  exit 0
+fi
+
+echo "Starting dumps at $TS to $DEST_PREFIX (compression=$COMPRESS)"
+
+rc=0
+while IFS= read -r db; do
+  [[ -z "$db" ]] && continue
+  key="$DEST_PREFIX/${CLUSTER:-cluster}/$db/$db-$TS.dump"
+  echo "Dumping database '$db' -> $key"
+
+  if ! su-exec postgres pg_dump -h /run/postgresql -U postgres -Fc -Z "$COMPRESS" --no-owner --no-privileges "$db" |
+    aws s3 cp - "$key" --only-show-errors; then
+    echo "Failed to dump database '$db' to $key" >&2
+    rc=1
+  else
+    echo "Uploaded: $key"
+  fi
+
+done <<<"$DB_NAMES"
+
+exit $rc

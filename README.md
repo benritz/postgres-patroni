@@ -61,6 +61,26 @@ Use prefixes for passwords, e.g. `file:/run/secrets/postgres_su_password` or `ss
 - RESTORE_REGION, RESTORE_PATH: S3 region and path for restore via prefixes.
 - RESTORE_ACCESS_KEY, RESTORE_SECRET_KEY: Credentials via prefixes (optional with instance profile).
 
+### Logical Dumps to S3
+
+A lightweight per-database dump using `pg_dump -Fc`, streamed to S3. Only runs on the Patroni leader.
+
+- DUMP_PATH: Required. S3 destination, e.g. `s3://my-bucket/postgres-dumps`
+- DUMP_REGION: Optional. AWS region; if omitted, AWS SDK defaults apply.
+- DUMP_ACCESS_KEY, DUMP_SECRET_KEY: Optional. If omitted, the container uses its IAM role (instance profile/IRSA).
+- DUMP_COMPRESSION: Optional. `pg_dump` compression level `0-9` (default `6`).
+- DUMP_CRON: Optional. Cron schedule for automated dumps (e.g., `15 2 * * *`).
+
+Output object key format:
+- `<DUMP_PATH>/<CLUSTER>/<db>/<db>-YYYYMMDDTHHMMSSZ.dump`
+
+Manual run inside the Patroni container:
+- `postgres-dump-all`
+
+Notes:
+- If `DUMP_PATH` is not set, dumps are skipped.
+- Dumps exclude template databases, owner/privilege statements.
+
 ## Running
 
 - Set the required environment variables in `.env` or `compose.yaml`

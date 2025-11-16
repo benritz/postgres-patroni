@@ -42,6 +42,7 @@ read_secret_var RESTORE_PATH
 read_secret_var RESTORE_REGION
 read_secret_var RESTORE_ACCESS_KEY
 read_secret_var RESTORE_SECRET_KEY
+read_secret_var DUMP_CRON
 
 # backup/restore config
 export BACKUP_NAME="${BACKUP_NAME:=$CLUSTER}"
@@ -74,14 +75,17 @@ if [[ "$upgrade_pg_data" == "1" ]]; then
   fi
 fi
 
-# backup schedule
-if [[ -n "${BACKUP_CRON_FULL:-}" || -n "${BACKUP_CRON_INCR:-}" ]]; then
+# backup/dump schedules
+if [[ -n "${BACKUP_CRON_FULL:-}" || -n "${BACKUP_CRON_INCR:-}" || -n "${DUMP_CRON:-}" ]]; then
   {
     if [[ -n "${BACKUP_CRON_FULL:-}" ]]; then
       echo "$BACKUP_CRON_FULL /usr/local/bin/pgbackrest-backup full >> /proc/1/fd/1 2>> /proc/1/fd/2"
     fi
     if [[ -n "${BACKUP_CRON_INCR:-}" ]]; then
       echo "$BACKUP_CRON_INCR /usr/local/bin/pgbackrest-backup incr >> /proc/1/fd/1 2>> /proc/1/fd/2"
+    fi
+    if [[ -n "${DUMP_CRON:-}" ]]; then
+      echo "$DUMP_CRON /usr/local/bin/postgres-dump-all >> /proc/1/fd/1 2>> /proc/1/fd/2"
     fi
   } | crontab -
   crond -b -l 8 || true
