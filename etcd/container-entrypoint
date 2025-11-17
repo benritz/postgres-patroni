@@ -38,23 +38,34 @@ chown -R etcd:etcd /etc/etcd/
 # try to add node to an existing cluster
 if [[ "$ETCD_INITIAL_CLUSTER_STATE" == "existing" ]]; then
   echo "Adding to existing cluster"
-  member_info=$(etcdctl --endpoints "$ETCD_ENDPOINTS" member list -w json | jq ".members[] | select(.peerURLs[]? == \"$ETCD_INITIAL_ADVERTISE_PEER_URLS\")")
-  echo $member_info
-  if [[ -z "$member_info" ]]; then
-    echo "$ETCD_NAME is not a member, adding"
-    MEMBER_ADD_OUT=$(mktemp)
-    etcdctl --endpoints "$ETCD_ENDPOINTS" member add "$ETCD_NAME" --peer-urls="$ETCD_INITIAL_ADVERTISE_PEER_URLS" >"${MEMBER_ADD_OUT}" 2>&1 || true
-    export ETCD_INITIAL_CLUSTER=$(grep 'ETCD_INITIAL_CLUSTER=' "${MEMBER_ADD_OUT}" | awk -F'"' '{print $2}')
-    if [ -z "${ETCD_INITIAL_CLUSTER}" ]; then
-      echo "Failed to add member $ETCD_NAME"
-      echo "$MEMBER_ADD_OUT"
-      rm "$MEMBER_ADD_OUT"
-      exit 1
-    fi
-    rm "$MEMBER_ADD_OUT"
-  else
-    echo "$ETCD_NAME is already a member"
+
+  # fail if data directory is not empty when joining an existing cluster
+  if [ -d "$ETCD_DATA_DIR" ] && [ "$(ls -A "$ETCD_DATA_DIR")" ]; then
+    echo "Error: $ETCD_DATA_DIR must be empty when joining an existing cluster" >&2
+    exit 1
   fi
+
+  member_json=$(etcdctl --endpoints "$ETCD_ENDPOINTS" member list -w json | jq -c ".members[] | select(.peerURLs[]? == \"$ETCD_INITIAL_ADVERTISE_PEER_URLS\")" || true)
+  if [[ -n "$member_json" ]]; then
+    member_id=$(echo "$member_json" | jq -r '.ID')
+    if [[ -n "$member_id" ]]; then
+      member_id_hex=$(printf '%x\n' "$member_id" || true)
+      echo "Removing existing member id=${member_id_hex} for $ETCD_NAME"
+      etcdctl --endpoints "$ETCD_ENDPOINTS" member remove "${member_id_hex}" || true
+    fi
+  fi
+
+  echo "Adding member $ETCD_NAME"
+  MEMBER_ADD_OUT=$(mktemp)
+  etcdctl --endpoints "$ETCD_ENDPOINTS" member add "$ETCD_NAME" --peer-urls="$ETCD_INITIAL_ADVERTISE_PEER_URLS" >"${MEMBER_ADD_OUT}" 2>&1 || true
+  export ETCD_INITIAL_CLUSTER=$(grep 'ETCD_INITIAL_CLUSTER=' "${MEMBER_ADD_OUT}" | awk -F'"' '{print $2}')
+  if [ -z "${ETCD_INITIAL_CLUSTER}" ]; then
+    echo "Failed to add member $ETCD_NAME"
+    echo "$MEMBER_ADD_OUT"
+    rm "$MEMBER_ADD_OUT"
+    exit 1
+  fi
+  rm "$MEMBER_ADD_OUT"
 fi
 
 # exec su-exec etcd etcd
