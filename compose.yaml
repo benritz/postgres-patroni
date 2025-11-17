@@ -60,6 +60,16 @@ x-pg-vars: &pg-vars
   # RESTORE_ACCESS_KEY:
   # RESTORE_SECRET_KEY: file:/run/secrets/restore_secret_key
   # RESTORE_SECRET_KEY:
+  # DUMP_REGION: file:/run/secrets/restore_region
+  # DUMP_REGION: ssm:/prod/db/postgres/physical/restore/region
+  # DUMP_PATH: file:/run/secrets/restore_path
+  # DUMP_PATH: ssm:/prod/db/postgres/physical/restore/path
+  # DUMP_ACCESS_KEY: file:/run/secrets/restore_access_key
+  # DUMP_ACCESS_KEY:
+  # DUMP_SECRET_KEY: file:/run/secrets/restore_secret_key
+  # DUMP_SECRET_KEY:
+  # DUMP_CRON: ssm:/prod/db/postgres/logical/dump/cron
+  # DUMP_COMPRESSION: 6
 
 x-pg-secrets: &pg-secrets
   - ca_root_cert

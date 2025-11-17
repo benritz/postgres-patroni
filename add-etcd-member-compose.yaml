@@ -1,0 +1,44 @@
+x-cert-vars: &cert-vars
+  CA_ROOT_CERT:
+  CA_ROOT_KEY:
+  CERT_C:
+  CERT_ST:
+  CERT_L:
+  CERT_O:
+  CERT_OU:
+  CERT_CN:
+  CERT_EXPIRY:
+  CERT_KEY_ALGO:
+  CERT_KEY_SIZE:
+  CERT_SAN_IP:
+  CERT_SAN_DNS:
+
+x-etcd-vars: &etcd-vars
+  <<: *cert-vars
+  CLUSTER: ${CLUSTER}
+  ETCD_INITIAL_CLUSTER: etcd_01=https://etcd_01:2380,etcd_02=https://etcd_02:2380,etcd_03=https://etcd_03:2380
+  ETCD_INITIAL_CLUSTER_STATE: existing
+  # ETCD_INITIAL_CLUSTER_TOKEN: file:/run/secrets/etcd_initial_cluster_token
+  ETCD_ENDPOINTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
+
+services:
+  etcd:
+    container_name: ${COMPOSE_PROJECT_NAME}-etcd
+    image: 309926566976.dkr.ecr.eu-west-2.amazonaws.com/db/postgres-patroni/etcd
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "5"
+    volumes:
+      - etcd_data:/var/etcd-data
+    environment:
+      <<: *etcd-vars
+      ETCD_NAME: ${ETCD_HOST}
+    ports:
+      - 2379:2379
+      - 2380:2380
+    hostname: ${ETCD_HOST}
+
+volumes:
+  etcd_data:
