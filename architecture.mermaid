@@ -17,11 +17,6 @@ flowchart TB
             PGB2[PgBouncer<br/>:6432]
             PAT2[Patroni<br/>:8008]
         end
-        subgraph Node3[Patroni Node 3]
-            PG3[(PostgreSQL<br/>Replica)]
-            PGB3[PgBouncer<br/>:6432]
-            PAT3[Patroni<br/>:8008]
-        end
     end
     subgraph Consensus
         ETCD1[etcd 1<br/>:2379]
@@ -36,22 +31,16 @@ flowchart TB
     
     HAP1 -->|mTLS| PGB1
     HAP1 -->|mTLS| PGB2
-    HAP1 -->|mTLS| PGB3
     HAP2 -->|mTLS| PGB1
     HAP2 -->|mTLS| PGB2
-    HAP2 -->|mTLS| PGB3
     PGB1 -->|Unix Socket| PG1
     PGB2 -->|Unix Socket| PG2
-    PGB3 -->|Unix Socket| PG3
     PAT1 <-->|mTLS| ETCD1
     PAT1 <-->|mTLS| ETCD2
     PAT1 <-->|mTLS| ETCD3
     PAT2 <-->|mTLS| ETCD1
     PAT2 <-->|mTLS| ETCD2
     PAT2 <-->|mTLS| ETCD3
-    PAT3 <-->|mTLS| ETCD1
-    PAT3 <-->|mTLS| ETCD2
-    PAT3 <-->|mTLS| ETCD3
     ETCD1 <-->|mTLS| ETCD2
     ETCD2 <-->|mTLS| ETCD3
     ETCD3 <-->|mTLS| ETCD1
