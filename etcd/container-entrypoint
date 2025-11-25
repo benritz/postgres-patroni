@@ -11,6 +11,8 @@ export CERT_GROUP=etcd
 gen-ssl
 unset CA_ROOT_CERT CA_ROOT_KEY
 
+chmod go+x /usr/local/etc
+
 export ETCD_NAME="${ETCD_NAME:=$HOSTNAME}"
 
 export ETCD_DATA_DIR=/var/etcd-data
@@ -68,5 +70,4 @@ if [[ "$ETCD_INITIAL_CLUSTER_STATE" == "existing" ]]; then
   rm "$MEMBER_ADD_OUT"
 fi
 
-# exec su-exec etcd etcd
-exec etcd
+exec su-exec etcd etcd
