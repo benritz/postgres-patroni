@@ -207,12 +207,39 @@ services:
       - ca_root_key
     depends_on:
       - pg_01
-      # - pg_02
+      - pg_02
     networks:
       cluster:
     ports:
       - 5432:5432
       - 5433:5433
+
+  haproxy_02:
+    build: ./haproxy
+    image: postgres-patroni/haproxy:latest
+    container_name: haproxy_02
+    hostname: haproxy_02
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "5"
+    environment:
+      <<: *cert-vars
+      TARGETS: pg_01:6432,pg_02:6432
+    env_file:
+      - .env
+    secrets:
+      - ca_root_cert
+      - ca_root_key
+    depends_on:
+      - pg_01
+      - pg_02
+    networks:
+      cluster:
+    # ports:
+    #   - 5432:5432
+    #   - 5433:5433
 
 secrets:
   ca_root_cert:
