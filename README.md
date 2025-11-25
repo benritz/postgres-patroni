@@ -2,6 +2,8 @@
 
 PostgreSQL high availability implemented by Patroni, etcd for the distributed configuration store, HAProxy for load balancing, pgBackRest for backup/restore and PgBouncer for connection pooling.
 
+![Architecture Diagram](architecture.svg)
+
 ## Environment variables
 
 Use `.env.example` as a starting point:
@@ -15,7 +17,6 @@ Prefix-based secret values are supported for all sensitive vars:
 - file:/path: Read from a file (e.g., Docker secret)
 - value:raw: Literal value
 - raw without prefix: Treated as a literal value
-
 
 ### Required
 
