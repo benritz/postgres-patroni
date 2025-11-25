@@ -8,7 +8,7 @@ restapi:
   keyfile: /usr/local/etc/ssl/server.key
   cafile: /usr/local/etc/ssl/ca-root.crt
   verify_client: required
-# authentiation not needed due to client cert requirement
+# authentication not needed due to client cert requirement
 # use authentication if tls is disabled
 #  authentication:
 #    username: username
