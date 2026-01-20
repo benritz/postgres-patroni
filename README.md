@@ -13,6 +13,7 @@ cp .env.example .env
 ```
 
 Prefix-based secret values are supported for all sensitive vars:
+
 - ssm:/path: Fetch from AWS SSM Parameter Store (with decryption)
 - file:/path: Read from a file (e.g., Docker secret)
 - value:raw: Literal value
@@ -50,6 +51,34 @@ Prefix-based secret values are supported for all sensitive vars:
 - POSTGRES_REWIND_USER, POSTGRES_REWIND_PWD
 Use prefixes for passwords, e.g. `file:/run/secrets/postgres_su_password` or `ssm:/prod/db/postgres/su_password`.
 
+### Shared Buffers
+
+- PG_SHARED_BUFFERS: PostgreSQL `shared_buffers` setting (from `25%` of available memory)
+
+Huge pages are recommended for larger shared buffer sizes. The `vm.nr_hugepages`
+kernel parameter should be set to at least the required number of pages for PostgreSQL.
+Query the required number of huge pages with:
+
+```sql
+select * from pg_settings where name in ('shared_memory_size', 'shared_memory_size_in_huge_pages');
+```
+
+e.g. for POSTGRES_SHARED_BUFFERS=1250MB the shared memory size could be 1318MB
+which requires 659 huge pages of 2MB.
+
+Set the `vm.nr_hugepages` value on the host system with:
+
+```
+sudo sysctl -w vm.nr_hugepages=XXX
+echo "vm.nr_hugepages=XXX" >>/etc/sysctl.conf
+```
+
+Restart the container and verify that PostgreSQL is using huge pages with:
+
+```sql
+select * from pg_settings where name in ('huge_pages_status');
+```
+
 ### pgBackRest Backup
 
 - BACKUP_NAME: Defaults to `CLUSTER` if unset.
@@ -73,12 +102,15 @@ A lightweight per-database dump using `pg_dump -Fc`, streamed to S3. Only runs o
 - DUMP_CRON: Optional. Cron schedule for automated dumps (e.g., `15 2 * * *`).
 
 Output object key format:
+
 - `<DUMP_PATH>/<CLUSTER>/<db>/<db>-YYYYMMDDTHHMMSSZ.dump`
 
 Manual run inside the Patroni container:
+
 - `postgres-dump-all`
 
 Notes:
+
 - If `DUMP_PATH` is not set, dumps are skipped.
 - Dumps exclude template databases, owner/privilege statements.
 
