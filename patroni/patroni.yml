@@ -64,6 +64,7 @@ bootstrap:
         - hostssl all all ::1/128 scram-sha-256
       #      use_slots: true
       parameters:
+        shared_buffers: ${POSTGRES_SHARED_BUFFERS}
         #        wal_level: hot_standby
         #        hot_standby: "on"
         #        max_connections: 100
