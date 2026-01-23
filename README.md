@@ -128,3 +128,28 @@ docker compose up --build
 
 - Postgres read/write connection to primary server: Docker Host `tcp/tls:5432` → HAProxy `tcp/tls:5432` → PgBouncer `tcp/ssl:6432` → Postgres `unix socket` on the primary server.
 - Postgres read-only TLS connection to any server (primary or standby): Docker Host `tcp/tls:5433` → HAProxy `tcp/tls:5433` → PgBouncer `tcp/ssl:6432` → Postgres `unix socket` on any server.
+
+## Replace an etcd member for an existing cluster
+
+If the instance that runs a etcd member needs to be replaced (upgrade, failure)
+then etcd member will need to be added back to the existing cluster. The
+compose.yaml file expects the etcd cluster is a new cluster and will fail to add
+the etcd member back to the cluster. The etcd container and volume needs to be
+removed. The add-etcd-member-comppose.yaml file is a template for adding a member
+back to an existing cluster. Use compose to start the add-etcd-member-comppose.yaml
+and wait for the member to join the cluster. Then stop and remove the container
+(not the volume) and start the original compose.yaml file.
+
+The following commands illustrate the process:
+
+```sh
+docker stop etcd
+docker rm etcd
+docker volume rm etcd_data
+docker compose -f add-etcd-member-compose.yaml up
+
+# wait for member to join cluster
+
+docker rm etcd
+docker compose up
+```
