@@ -53,7 +53,8 @@ Use prefixes for passwords, e.g. `file:/run/secrets/postgres_su_password` or `ss
 
 ### Shared Buffers
 
-- PG_SHARED_BUFFERS: PostgreSQL `shared_buffers` setting (from `25%` of available memory)
+- PG_SHARED_BUFFERS: PostgreSQL `shared_buffers` setting (for example `25%` of
+available memory)
 
 Huge pages are recommended for larger shared buffer sizes. The `vm.nr_hugepages`
 kernel parameter should be set to at least the required number of pages for PostgreSQL.
@@ -73,7 +74,19 @@ sudo sysctl -w vm.nr_hugepages=XXX
 echo "vm.nr_hugepages=XXX" >>/etc/sysctl.conf
 ```
 
-Restart the container and verify that PostgreSQL is using huge pages with:
+If the cluster is already setup the Patroni configuration will need to be updated
+with any new shared buffers size.
+
+```sh
+patronictl edit-config
+
+# add or update the shared_buffers: XXX line under the postgresql > parameters section
+# save and exit the editor
+
+patronictl restart <CLUSTER>
+```
+
+Verify that PostgreSQL is using huge pages with:
 
 ```sql
 select * from pg_settings where name in ('huge_pages_status');
