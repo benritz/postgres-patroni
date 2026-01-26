@@ -18,6 +18,8 @@ x-etcd-vars: &etcd-vars
   CLUSTER: ${CLUSTER}
   ETCD_INITIAL_CLUSTER: etcd_01=https://etcd_01:2380,etcd_02=https://etcd_02:2380,etcd_03=https://etcd_03:2380
   ETCD_INITIAL_CLUSTER_STATE: existing
+  ETCD_AUTO_COMPACTION_MODE: periodic
+  ETCD_AUTO_COMPACTION_RETENTION: "1h"
   # ETCD_INITIAL_CLUSTER_TOKEN: file:/run/secrets/etcd_initial_cluster_token
   ETCD_ENDPOINTS: etcd_01:2379,etcd_02:2379,etcd_03:2379
 
