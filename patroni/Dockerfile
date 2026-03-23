@@ -1,4 +1,4 @@
-FROM alpine:3.22 AS builder
+FROM alpine:3.23 AS builder
 
 RUN apk add --no-cache \
     python3 \
@@ -15,7 +15,7 @@ RUN python3 -m venv /venv && \
     /venv/bin/pip install 'patroni[etcd]'
 
 
-FROM alpine:3.22
+FROM alpine:3.23
 
 RUN apk add --no-cache \
     bash \
@@ -29,12 +29,10 @@ RUN apk add --no-cache \
     shadow \
     dcron \
     tini \
-    aws-cli && \
-  apk add --no-cache \
+    aws-cli \
     postgresql18 \
     postgresql18-contrib \
-    libpq-dev \
-    --repository https://dl-cdn.alpinelinux.org/alpine/edge/main && \
+    libpq-dev && \
   apk add --no-cache \ 
     cfssl \
     --repository https://dl-cdn.alpinelinux.org/alpine/edge/testing
