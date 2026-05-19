@@ -82,9 +82,13 @@ select * from pg_settings where name in ('huge_pages_status');
 
 ### Override Postgres parameters
 
+For OLTP use cases JIT can be disabled by setting `POSTGRES_JIT=off`. You can also raise
+or lower the cost estimation before JIT is used by setting
+`POSTGRES_JIT_ABOVE_COST`.
+
 If the cluster is already setup the Patroni configuration will need to be updated
 with any new `shared_buffers`, `work_mem`, `effective_io_concurrency`, or
-`random_page_cost` value.
+`random_page_cost`, `jit`, or `jit_above_cost` value.
 
 ```sh
 patronictl edit-config
@@ -94,6 +98,8 @@ patronictl edit-config
 # work_mem: XXX
 # effective_io_concurrency: XXX
 # random_page_cost: XXX
+# jit: on
+# jit_above_cost: 100000
 # save and exit the editor
 
 patronictl restart <CLUSTER>

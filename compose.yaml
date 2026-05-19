@@ -46,6 +46,8 @@ x-pg-vars: &pg-vars
   # POSTGRES_WORK_MEM: 16MB
   # POSTGRES_EFFECTIVE_IO_CONCURRENCY: 200
   # POSTGRES_RANDOM_PAGE_COST: 1.1
+  # POSTGRES_JIT: on
+  # POSTGRES_JIT_ABOVE_COST: 100000
   BACKUP_NAME:
   # BACKUP_REGION: file:/run/secrets/backup_region
   # BACKUP_REGION: ssm:/prod/db/postgres/physical/backup/region

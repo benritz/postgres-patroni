@@ -68,6 +68,8 @@ bootstrap:
         work_mem: ${POSTGRES_WORK_MEM}
         effective_io_concurrency: ${POSTGRES_EFFECTIVE_IO_CONCURRENCY}
         random_page_cost: ${POSTGRES_RANDOM_PAGE_COST}
+        jit: ${POSTGRES_JIT}
+        jit_above_cost: ${POSTGRES_JIT_ABOVE_COST}
         #        wal_level: hot_standby
         #        hot_standby: "on"
         #        max_connections: 100

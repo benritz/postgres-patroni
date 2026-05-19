@@ -63,6 +63,8 @@ export POSTGRES_SUBNET="${POSTGRES_SUBNET:-$(ip -4 route | awk -v i="$NI" '$0 ~ 
 
 export POSTGRES_ARCHIVE_TIMEOUT="${POSTGRES_ARCHIVE_TIMEOUT:-0}"
 export POSTGRES_SHARED_BUFFERS="${POSTGRES_SHARED_BUFFERS:-128MB}"
+export POSTGRES_JIT="${POSTGRES_JIT:-on}"
+export POSTGRES_JIT_ABOVE_COST="${POSTGRES_JIT_ABOVE_COST:-100000}"
 
 envsubst </venv/etc/patroni-template.yml >/venv/etc/patroni.yml
 
