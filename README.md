@@ -74,22 +74,29 @@ sudo sysctl -w vm.nr_hugepages=XXX
 echo "vm.nr_hugepages=XXX" >>/etc/sysctl.conf
 ```
 
-If the cluster is already setup the Patroni configuration will need to be updated
-with any new shared buffers size.
-
-```sh
-patronictl edit-config
-
-# add or update the shared_buffers: XXX line under the postgresql > parameters section
-# save and exit the editor
-
-patronictl restart <CLUSTER>
-```
-
 Verify that PostgreSQL is using huge pages with:
 
 ```sql
 select * from pg_settings where name in ('huge_pages_status');
+```
+
+### Override Postgres parameters
+
+If the cluster is already setup the Patroni configuration will need to be updated
+with any new `shared_buffers`, `work_mem`, `effective_io_concurrency`, or
+`random_page_cost` value.
+
+```sh
+patronictl edit-config
+
+# add or update the relevant lines under the postgresql > parameters section:
+# shared_buffers: XXX
+# work_mem: XXX
+# effective_io_concurrency: XXX
+# random_page_cost: XXX
+# save and exit the editor
+
+patronictl restart <CLUSTER>
 ```
 
 ### pgBackRest Backup

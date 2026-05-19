@@ -65,6 +65,9 @@ bootstrap:
       #      use_slots: true
       parameters:
         shared_buffers: ${POSTGRES_SHARED_BUFFERS}
+        work_mem: ${POSTGRES_WORK_MEM}
+        effective_io_concurrency: ${POSTGRES_EFFECTIVE_IO_CONCURRENCY}
+        random_page_cost: ${POSTGRES_RANDOM_PAGE_COST}
         #        wal_level: hot_standby
         #        hot_standby: "on"
         #        max_connections: 100
