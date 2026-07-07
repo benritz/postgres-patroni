@@ -108,7 +108,15 @@ fi
 mkdir -p /var/log/pgbouncer
 chown -R pgbouncer:postgres /var/log/pgbouncer
 rm -f /var/run/pgbouncer/.pidfile
-pgbouncer /usr/local/etc/pgbouncer/pgbouncer.ini >/proc/1/fd/1 2>/proc/1/fd/2 &
+PGBOUNCER_DATABASES="${PGBOUNCER_DATABASES:-}"
+if [[ -n "$PGBOUNCER_DATABASES" ]]; then
+  PGBOUNCER_DATABASES="$(printf '%s' "$PGBOUNCER_DATABASES" | tr ';' '\n')"
+  export PGBOUNCER_DATABASES=$'\n'"$PGBOUNCER_DATABASES"
+else
+  export PGBOUNCER_DATABASES=""
+fi
+envsubst </usr/local/etc/pgbouncer/pgbouncer.ini >/var/run/pgbouncer/pgbouncer.ini
+pgbouncer /var/run/pgbouncer/pgbouncer.ini >/proc/1/fd/1 2>/proc/1/fd/2 &
 pgbouncer-haproxy-agent
 
 exec su-exec postgres /venv/bin/patroni /venv/etc/patroni.yml

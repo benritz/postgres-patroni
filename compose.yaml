@@ -48,6 +48,7 @@ x-pg-vars: &pg-vars
   # POSTGRES_RANDOM_PAGE_COST: 1.1
   # POSTGRES_JIT: on
   # POSTGRES_JIT_ABOVE_COST: 100000
+  PGBOUNCER_DATABASES:
   BACKUP_NAME:
   # BACKUP_REGION: file:/run/secrets/backup_region
   # BACKUP_REGION: ssm:/prod/db/postgres/physical/backup/region

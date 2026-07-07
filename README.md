@@ -51,6 +51,26 @@ Prefix-based secret values are supported for all sensitive vars:
 - POSTGRES_REWIND_USER, POSTGRES_REWIND_PWD
 Use prefixes for passwords, e.g. `file:/run/secrets/postgres_su_password` or `ssm:/prod/db/postgres/su_password`.
 
+### PgBouncer Database Mappings
+
+- `PGBOUNCER_DATABASES`: Optional extra entries added under PgBouncer's `[databases]` section.
+- The default wildcard mapping is always preserved:
+  - `* = host=/var/run/postgresql port=5432`
+- In `.env`, provide multiple mappings as a semicolon-separated list:
+
+```env
+PGBOUNCER_DATABASES=appdb = host=/var/run/postgresql port=5432 dbname=appdb;analytics = host=/var/run/postgresql port=5432 dbname=analytics
+```
+
+- In `compose.yaml`, you can also set a literal multiline value:
+
+```yaml
+environment:
+  PGBOUNCER_DATABASES: |
+    appdb = host=/var/run/postgresql port=5432 dbname=appdb
+    analytics = host=/var/run/postgresql port=5432 dbname=analytics
+```
+
 ### Shared Buffers
 
 - PG_SHARED_BUFFERS: PostgreSQL `shared_buffers` setting (for example `25%` of
